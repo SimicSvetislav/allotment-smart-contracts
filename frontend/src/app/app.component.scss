@@ -1,0 +1,23 @@
+#main-navbar {
+    background-color: #4e5253 !important;
+}
+
+.rounded-btn{
+    -webkit-border-radius: 50px;
+            border-radius: 50px;
+    color: rgba(255,255,255,0.8);
+    background: #227391;
+    border: 1px solid rgba(255,255,255,0.8);
+    font-size: 14px;
+    line-height: 30px;
+    padding: 0 15px;
+}
+
+.rounded-btn:hover {
+    background-color: #31acd8 !important;
+}
+.rounded-btn:focus,.rounded-btn:active,.rounded-btn:visited{
+    color: rgba(255,255,255,1) !important;
+    border: 2px solid rgba(255,255,255,1) !important;
+    outline: none !important;
+}

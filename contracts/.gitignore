@@ -1,0 +1,6 @@
+target/
+src/
+compile_old.bat
+deploy.py
+HelloWorld.sol
+TestLibrary.sol

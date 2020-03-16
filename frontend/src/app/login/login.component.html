@@ -1,0 +1,20 @@
+<div class="login-page animate">
+	<div class="row">
+		<div class="col-md-6 offset-md-3">
+        	<!--<img src="assets/smart-contract-512.png" class="user-avatar" /> -->
+			<h1>Allotment platform<br/><small>Representatives module</small></h1>
+			<form role="form" (ngSubmit)="login()">
+				<div class="form-content">
+					<div class="form-group">
+						<input type="text" id="username" required [(ngModel)]="user.username" name="username" class="form-control input-underline input-lg" placeholder="Username">
+					</div>
+					<div class="form-group">
+            			<input name="password" [(ngModel)]="user.password" type="password" id="inputPassword" class="form-control input-underline input-lg"  placeholder="Password" required>
+					</div>
+				</div>
+				<button class="btn rounded-btn"> Log in </button>
+			</form><br>
+			<!-- <button class="btn rounded-btn" (click)="home()"> Back to home </button> -->
+		</div>	
+	</div>
+</div>
