@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Organization;
 
 @Repository
-public interface OrganizationRepository extends JpaRepository<Organization, String> {
+public interface OrganizationRepository extends JpaRepository<Organization, Long> {
 
 }

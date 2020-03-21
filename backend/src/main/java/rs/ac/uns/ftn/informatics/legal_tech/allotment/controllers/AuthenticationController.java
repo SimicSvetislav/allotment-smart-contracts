@@ -72,7 +72,7 @@ public class AuthenticationController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         
             
-        return new ResponseEntity<JwtResponse>(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities(), repr.getNetworkAddress()), HttpStatus.OK);
+        return new ResponseEntity<JwtResponse>(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities(), repr.getId()), HttpStatus.OK);
     	      
        
     }
@@ -104,7 +104,7 @@ public class AuthenticationController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         
             
-        return new ResponseEntity<JwtResponse>(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities(), repr.getNetworkAddress()), HttpStatus.OK);
+        return new ResponseEntity<JwtResponse>(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities(), repr.getId()), HttpStatus.OK);
     	      
        
     }
@@ -128,11 +128,11 @@ public class AuthenticationController {
 		repr.setDisplayName(username);
 		repr.setEmail(email);
 		repr.setFullName(fullName);
-		repr.setNetworkAddress("134etrgdftr23rqa");
+		repr.setId(1L);
 		repr.setPassword(encoder.encode(password));
 		repr.setPhoneNumber(phoneNumber);
 		
-		repr.setRepresenting(orgService.findOneByNetworkAddress("534etrgdftr23rqa").get());
+		repr.setRepresenting(orgService.findOneById(1L));
     	
         service.save(repr);
 

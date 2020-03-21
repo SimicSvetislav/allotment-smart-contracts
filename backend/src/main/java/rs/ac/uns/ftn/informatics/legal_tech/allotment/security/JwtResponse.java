@@ -10,26 +10,26 @@ public class JwtResponse {
     private String displayName;
 	private Collection<? extends GrantedAuthority> authorities;
 	//private Integer idCompany;
-	private String networkAddress;
+	private Long id;
 
-	public JwtResponse(String accessToken, String displayName, Collection<? extends GrantedAuthority> authorities, String networkAddress) {
+	public JwtResponse(String accessToken, String displayName, Collection<? extends GrantedAuthority> authorities, Long id) {
 		this.token = accessToken;
 		this.displayName = displayName;
 		this.authorities = authorities;
 		//this.idCompany = id;
-		this.networkAddress = networkAddress;
+		this.id = id;
 	}
 	
 	
 
-    public String getNetworkAddress() {
-		return networkAddress;
+    public Long getId() {
+		return id;
 	}
 
 
 
-	public void setNetworkAddress(String networkAddress) {
-		this.networkAddress = networkAddress;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 

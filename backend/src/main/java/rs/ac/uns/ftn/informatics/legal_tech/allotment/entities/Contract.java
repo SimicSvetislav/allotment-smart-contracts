@@ -4,22 +4,24 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 
 import lombok.Data;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public @Data class Organization {
-	
+public @Data class Contract {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	protected Long id;
+	private Long id;
 	
-	protected String name;
-	protected String country;
-	protected String city;
-	protected String address;
-
+	private String address;
+	private String status;
+	
+	@ManyToOne
+	private Agency agency;
+	
+	@ManyToOne
+	private Organization org;
+	
 }

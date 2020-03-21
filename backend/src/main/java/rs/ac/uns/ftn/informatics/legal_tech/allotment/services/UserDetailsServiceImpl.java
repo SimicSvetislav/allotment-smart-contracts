@@ -19,7 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	@Transactional
 	public UserDetails loadUserByUsername(String displayName) throws UsernameNotFoundException {     
-        if(repository.findById(displayName) != null) {
+        if(repository.findByDisplayName(displayName) != null) {
         	return UserPrinciple.build(repository.findByDisplayName(displayName));
         } else {
         	return null;

@@ -85,7 +85,7 @@ contract DateUtilsLibrary is BokkyPooBahsDateTimeLibrary {
         pure
         returns (bool)
     {
-        require(isBefore(from1, to1) && isBefore(from2, to2), 'Intervals not valid');
+        require(isBefore(from1, to1) && isBefore(from2, to2), 'Intervals not valid (overlapping)');
         
         if (isBeforeOrSame(to1, from2) || isBeforeOrSame(to2, from1)) {
             return false;
@@ -99,7 +99,7 @@ contract DateUtilsLibrary is BokkyPooBahsDateTimeLibrary {
         pure
         returns (bool)
     {
-        require(isBefore(from1, to1) && isBefore(from2, to2), 'Intervals not valid');
+        require(isBefore(from1, to1) && isBefore(from2, to2), 'Intervals not valid (including)');
         
         if (isBeforeOrSame(from1, from2) && isAfterOrSame(to1, to2)) {
             return true;

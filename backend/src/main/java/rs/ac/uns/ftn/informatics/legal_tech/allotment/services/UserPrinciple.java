@@ -17,7 +17,7 @@ public class UserPrinciple implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
 
-	private String networkAddress;
+	private Long id;
 
     private String displayName;
     
@@ -28,9 +28,9 @@ public class UserPrinciple implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrinciple(String networkAddress, String email, String displayName, String password,
+    public UserPrinciple(Long id, String email, String displayName, String password,
 			    		Collection<? extends GrantedAuthority> authorities) {
-        this.networkAddress = networkAddress;
+        this.id = id;
         this.email = email;
         this.displayName = displayName;
         this.password = password;
@@ -44,7 +44,7 @@ public class UserPrinciple implements UserDetails {
     	//if(obj instanceof Representative) {
     		auth.add(new SimpleGrantedAuthority("ROLE_REPRESENTATIVE"));
     		 return new UserPrinciple(
-    	                ((Representative) obj).getNetworkAddress(),
+    	                ((Representative) obj).getId(),
     	                ((Representative) obj).getEmail(),
     	                ((Representative) obj).getDisplayName(),
     	                ((Representative) obj).getPassword(),
@@ -53,9 +53,9 @@ public class UserPrinciple implements UserDetails {
     	//}
     }
 
-    public String getNetworkAddress() {
-        return networkAddress;
-    }
+    /*public Long getId() {
+        return id;
+    }*/
 
     public String getDisplayName() {
         return displayName;
@@ -106,7 +106,7 @@ public class UserPrinciple implements UserDetails {
         if (o == null || getClass() != o.getClass()) return false;
         
         UserPrinciple user = (UserPrinciple) o;
-        return Objects.equals(networkAddress, user.networkAddress);
+        return Objects.equals(id, user.id);
     }
 	
 }
