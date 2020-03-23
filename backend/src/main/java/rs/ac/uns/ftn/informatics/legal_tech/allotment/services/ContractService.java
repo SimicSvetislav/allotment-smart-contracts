@@ -1,25 +1,22 @@
 package rs.ac.uns.ftn.informatics.legal_tech.allotment.services;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.bouncycastle.util.Arrays;
+import org.apache.el.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.RemoteFunctionCall;
+import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.protocol.core.methods.response.Web3ClientVersion;
-import org.web3j.tx.Contract;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.Transfer;
@@ -27,13 +24,16 @@ import org.web3j.tx.exceptions.ContractCallException;
 import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.utils.Convert;
 
-import io.reactivex.Flowable;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.SCParser;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.contracts.Allotment;
-import rs.ac.uns.ftn.informatics.legal_tech.allotment.contracts.HelloWorld;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ContractCTO;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.InfoEvent;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ReservationCTO;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.ContractDTO;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.DateRange;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.ReservationDTO;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.RoomsInfo;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Contract;
 
 @Service
 public class ContractService {
@@ -75,11 +75,21 @@ public class ContractService {
 			e.printStackTrace();
 		}
 		
-		try {
-			deployedContract._badOffSeasonMaxPenalty().send().toString();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Contract dbContract = new Contract();
+		dbContract.setAddress(deployedContract.getContractAddress());
+		dbContract.setStatus("NEG");
+		dbContract.setAgency(null);
+		dbContract.setOrg(null);
+		
+		EthFilter filter = new EthFilter( DefaultBlockParameterName.LATEST,
+			    DefaultBlockParameterName.LATEST, deployedContract.getContractAddress());
+		
+		web3j.ethLogFlowable(filter).subscribe(event -> {
+		    
+			InfoEvent ie = SCParser.parseInfoEvent(event.getData());
+			
+			System.out.println(ie);
+		});
 		
 		return deployedContract.getContractAddress();
 	}
@@ -228,11 +238,11 @@ public class ContractService {
 		
 		@SuppressWarnings("deprecation")
 		Allotment contract = Allotment.load(
-				contractAddress, web3j, reprService.getCredentials(id),
+				contractAddress, web3j, reprService.getCredentialsFromOrg(id),
 		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
 
 		try {
-			msg = contract.agencyAgreed().send().toString();
+			msg = contract.agencyAgreed(BigInteger.valueOf(id)).send().toString();
 		} catch (Exception e) {
 			System.out.println("Failed to confirm by agency!");
 			//e.printStackTrace();
@@ -253,11 +263,11 @@ public class ContractService {
 		
 		@SuppressWarnings("deprecation")
 		Allotment contract = Allotment.load(
-				contractAddress, web3j, reprService.getCredentials(userId),
+				contractAddress, web3j, reprService.getCredentialsFromOrg(userId),
 		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
 
 		try {
-			msg = contract.accomodationAgreed().send().toString();
+			msg = contract.accomodationAgreed(BigInteger.valueOf(userId)).send().toString();
 		} catch (Exception e) {
 			System.out.println("Failed to confirm by accomodation!");
 			// e.printStackTrace();
@@ -315,7 +325,7 @@ public class ContractService {
 		
 	}
 	
-	// Vraca balans naloga na koji se salje ether
+	// Salje jedan ether na zeljeni nalog
 	public String transfer(String from, String to, Long userId) {
 		TransactionManager transactionManager = new RawTransactionManager(
                 web3j,
@@ -351,6 +361,17 @@ public class ContractService {
 		return balance;
 	}
 	
+	public BigInteger getWeiBalanceAccount(Long id) {
+		
+		String address = reprService.getAccountAddress(id);
+		
+		BigInteger balance =  getBalance(address);
+		
+		return balance;
+	}
+	
+	
+	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public String reserve(String contractAddress, Long repr, ReservationCTO res) {
 		
 		String msg = null;
@@ -599,14 +620,114 @@ public class ContractService {
 			//e.printStackTrace();
 		}
 		
-		System.out.println("Returned: " + bytes.length);
+		List<RoomsInfo> ri = SCParser.parseAllRoomsInfo(bytes);
+	
+		String ret = "";
+		for (RoomsInfo r: ri) {
+			ret += r + "\n";
+			System.out.println(r);
+		}
 		
-		return msg;
+		System.out.println("Returned:\n" + ret);
+		
+		return ret.toString();
 	}
 
 	public String getContractInfo(String address) {
 		
-		return null;
+		String msg = "";
+		
+		@SuppressWarnings("deprecation")
+		Allotment contract = Allotment.load(
+				address, web3j, reprService.getCredentials(PLATFORM_ACCOUNT),
+		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
+
+		byte[] bytes = null;
+		
+		try {
+			bytes = contract.getContractInfoAsBytes().send();
+			msg = "Success";
+		} catch (Exception e) {
+			msg = "Failed";
+			System.out.println("Failed to get info!");
+			return msg;
+			//e.printStackTrace();
+		}
+		
+		ContractDTO c = new ContractDTO();
+		
+		try {
+			c = SCParser.parseContractInfo(bytes);
+		} catch (ParseException pe) {
+			System.out.println(pe.getMessage());
+			return "Parse failed";
+		}
+		
+		System.out.println(c);
+		
+		return c.toString();
+	}
+
+	public String withdraw(DateRange range, String address, Long userId) {
+		
+		String msg = "";
+		
+		@SuppressWarnings("deprecation")
+		Allotment contract = Allotment.load(
+				address, web3j, reprService.getCredentialsFromOrg(userId),
+		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
+		
+		
+		TransactionReceipt tr = null;
+		
+		Long startTimestamp = range.getStartDate().getTime() / 1000;
+		BigInteger startDate = BigInteger.valueOf(startTimestamp);
+		
+		Long endTimestamp = range.getEndDate().getTime() / 1000;
+		BigInteger endDate = BigInteger.valueOf(endTimestamp);
+				
+		try {
+			tr = contract.withdrawRooms(startDate, endDate).send();
+			msg = "Success";
+		} catch (Exception e) {
+			msg = "Failed";
+			System.out.println("Failed to withdraw!");
+			return msg;
+		}
+		
+		System.out.println(tr);
+		
+		return msg;
+	}
+	
+	public String getWithdrawals(String contractAddress) {
+		
+		String msg = "";
+		
+		@SuppressWarnings("deprecation")
+		Allotment contract = Allotment.load(
+				contractAddress, web3j, reprService.getCredentials(PLATFORM_ACCOUNT),
+		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
+
+		byte[] bytes = null;
+		
+		try {
+			bytes = contract.getWithdrawalsAsBytes().send();
+			msg = "Success getting withdrawals";
+		} catch (Exception e) {
+			msg = "Failed getting withdrawals";
+			e.printStackTrace();
+			System.out.println("Failed to transfer!");
+			return msg;
+		}
+		
+		List<DateRange> withdrawals = SCParser.parseWithdrawals(bytes);
+
+		for (DateRange dateRange : withdrawals) {
+			System.out.println(dateRange);
+		}
+		
+		return withdrawals.toString();	
 	}
 
 	

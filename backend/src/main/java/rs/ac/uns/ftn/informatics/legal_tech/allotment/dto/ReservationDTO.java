@@ -10,8 +10,12 @@ public @Data class ReservationDTO {
 	private Date from;
 	private Date to;
 	private Integer beds; 
+	
 	private Integer rooms;
 	private Long price;
 	private Integer priceType;
 	private Boolean provision;
+	
+	private Boolean mainSeason;
+	private Integer kids;
 }

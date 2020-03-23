@@ -21,5 +21,6 @@ public @Data class Organization {
 	protected String country;
 	protected String city;
 	protected String address;
+	protected String account;
 
 }

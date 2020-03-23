@@ -6,8 +6,6 @@ import './strings.sol';
 
 contract Allotment is SafeMath, DateUtilsLibrary, strings {
     
-    uint res_id_counter = 0;
-    
     struct Court {
         string name;
         string location;
@@ -19,8 +17,10 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         uint toDate;
         uint number;
         uint price;
-        uint priceType;
+        uint256 priceType;
         bool provision;
+        bool mainSeason; // Nema konkretnu upotrebu, koristi se radi debagovanja
+        uint kids;
         // bool verified; // Mozda se moze koristii polje provision
     }
     
@@ -31,6 +31,9 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     
     address payable public _agencyRepr;
     address payable public _accomodationRepr;
+    
+    uint256 _identifiedAgRepr;
+    uint256 _identifiedAccRepr;
     
     bool public _agencyAgreed = false;
     bool public _accomodationAgreed = false;
@@ -73,7 +76,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     
     // Key is number of beds
     mapping (uint => Reservation[]) _reservations;
-    uint8 constant RESERVATION_PARSE_STEP = 5;
+    uint8 constant RESERVATION_PARSE_STEP = 6;
     
     // Shows if agency has restricted number of rooms during the season
     bool _restriction = false;
@@ -81,7 +84,6 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     DateRange[] _withdrawals;
     
     uint _aggreementDate;
-    uint _maxBeds;
     
     enum Status { NEG, COW, REJ, DEP }
     
@@ -90,6 +92,12 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     uint8[] _bedOptions;
     
     uint256 _totalReservations;
+    
+    uint256 _mainSeasonStart;
+    uint256 _mainSeasonEnd;
+    
+    // Events
+    event MyEvent(uint256 code, string msg);
     
     modifier onlyAgencyRepr 
     {
@@ -124,12 +132,16 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     // [1] - smallKidDiscount
     // [2] - offSeasonMinimum
     // [3] - badOffSeasonMaxPenalty
+    // [4] - mainSeasonStart
+    // [5] - mainSeasonEnd
     //------------------------------------------
     // uint[4] memory roomsInfo
     // [0] - total number of beds
     // [1] - number of rooms with one bed
     // [2] - number of rooms with two beds
     // [3] - number of rooms with three beds
+    // [4] - ...
+    // [5] - ...
     // ... (TODO: Razmisliti o prosirenju)
     //------------------------------------------
     // uint[4] periods
@@ -137,7 +149,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     // [1] - withdrawal period
     //------------------------------------------
     constructor (address agencyRepr, address accomodationRepr, uint startDate, uint endDate,
-                    uint[] memory hotels, uint32[4] memory prices, uint8[4] memory someConstrains, 
+                    uint[] memory hotels, uint32[4] memory prices, uint256[6] memory someConstrains, 
                     uint[] memory roomsInfo, uint16[2] memory periods, bool clause, 
                     uint advancePayment, uint8 commision, uint finePerBed, 
                     string memory courtName, string memory courtLocation) 
@@ -146,44 +158,46 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         _agencyRepr = payable(agencyRepr);
         _accomodationRepr = payable(accomodationRepr);
         
-        require(isAfter(endDate, startDate), "End date must be after start date!");
+        require(isAfter(endDate, startDate), "End date must be after start date");
         
         _startDate = startDate;
         _endDate = endDate;
         
         _hotels = hotels;
         
-        assert(prices[0] <= prices[1]);
+        require(prices[0] <= prices[1], "Half-board price should be lower that full-board price");
         
         _priceHB = prices[0];
         _priceFB = prices[1];
         _priceOS = prices[2];
         
         // Kid age limit must be less than 18
-        assert(someConstrains[0] < 18);
+        require(someConstrains[0] < 18, "Kid must be less than 18 years old");
         
-        _kidAgeLimit = someConstrains[0];
+        _kidAgeLimit = uint8(someConstrains[0]);
         _kidPrice = prices[3];
         
-        _smallKidDiscount = someConstrains[1];
+        _smallKidDiscount = uint8(someConstrains[1]);
         
-        _offSeasonMinimum = someConstrains[2];
-        _badOffSeasonMaxPenalty = someConstrains[3];
+        _offSeasonMinimum = uint8(someConstrains[2]);
+        _badOffSeasonMaxPenalty = uint8(someConstrains[3]);
+        
+        _mainSeasonStart = someConstrains[4];
+        _mainSeasonEnd = someConstrains[5];
         
         _totalBeds = roomsInfo[0];
-        _maxBeds = roomsInfo.length - 1;
         
         uint sumOfBeds = 0;
         
-        for (uint8 i = 1; i < roomsInfo.length; i++) {
-            _roomsByBedNumbers[i] = roomsInfo[i];
+        for (uint i = 1; i < roomsInfo.length; i = add(i, 1)) {
+            _roomsByBedNumbers[uint8(i)] = roomsInfo[i];
             sumOfBeds += roomsInfo[i]*i;
             if (roomsInfo[i] > 0) {
-                _bedOptions.push(i);
+                _bedOptions.push(uint8(i));
             }
         }
         
-        assert(roomsInfo[0] == sumOfBeds);
+        require(roomsInfo[0] == sumOfBeds, "Total number of beds is not correct number");
         
         _informingPeriod = periods[0];
         _withdrawalPeriod = periods[1];
@@ -201,6 +215,11 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         _status = Status.NEG;
         
         _totalReservations = 0;
+        
+        _identifiedAgRepr = 0;
+        _identifiedAccRepr = 0;
+        
+        _aggreementDate = 0;
         
     }
     
@@ -221,38 +240,51 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     }
     
     
-    function agencyAgreed() 
+    function agencyAgreed(uint256 agReprId) 
         public 
         onlyAgencyRepr
         payable
     {
-        // require(msg.value == _advancePayment, "Ether value not valid");
+        
         if (_agencyAgreed == false) {
-            _agencyAgreed = true;
+         
             if (_accomodationAgreed == true) {
-                // _accomodationRepr.transfer(msg.value);
                 _accomodationRepr.transfer(_advancePayment);
                 _aggreementDate = now;
             }
+            
+            _agencyAgreed = true;
+            _identifiedAgRepr = agReprId;
+        } else {
+            revert("Agency already agreed");
         }
         
+        
+        // emit MyEvent(2);
         
     }
     
     
-    function accomodationAgreed() 
+    function accomodationAgreed(uint256 accReprId) 
         public 
         onlyAccomodationRepr
         payable
     {
-        if(_accomodationAgreed == false) {
-            _accomodationAgreed = true;
+        if (_accomodationAgreed == false ) {
+            
             if (_agencyAgreed == true) {
                 _accomodationRepr.transfer(_advancePayment);
                 _aggreementDate = now;
             }
-        }
+            
+            _accomodationAgreed = true;
+            _identifiedAccRepr = accReprId;
+            
+        } else {
+            revert("Accomodation already agreed");
+        } 
         
+        // emit MyEvent(1);
         
     }
     
@@ -262,7 +294,8 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     // [1] - to 
     // [2] - beds
     // [3] - number of rooms
-    // [4] - price type (1-half-board, 2-full-board, 3-off season)
+    // [4] - price type (1-half-board, 2-full-board)
+    // [5] - number of kids
     // repeat X times
     function reserve(uint[RESERVATION_PARSE_STEP] memory reservation) 
         public
@@ -273,57 +306,101 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         
         require(reservation.length % RESERVATION_PARSE_STEP == 0, 'Call parameters not properly sent');
         
-        for (uint i = 0; i < reservation.length; i += RESERVATION_PARSE_STEP) {
+        for (uint i = 0; i < reservation.length; i = add(i, RESERVATION_PARSE_STEP)) {
             uint fromDate = reservation[i];
-            uint toDate = reservation[i+1];
+            uint toDate = reservation[add(i,1)];
             
             // Check if dates are in valid range
             require(including(_startDate, _endDate, fromDate, toDate), 'Interval must be in range of the aggreement');
             
-            uint beds = reservation[i+2];
-            uint noRooms = reservation[i+3];
-            uint priceType = reservation[i+4];
+            // Check if some of  reservation dates is withdrawed 
+            bool isWithdrawed = false;
             
-            Reservation[] memory existingRes = _reservations[beds];
-            uint avaliable = _roomsByBedNumbers[uint8(beds)];
-            
-            require(avaliable > 0, "Rooms with desired number of beds doesn't exist");
-            require(avaliable >= noRooms, "Total number of rooms is not enough");
-            
-            uint occupied = 0;
-            
-            for (uint j = 0; j < existingRes.length; j++) {
+            for (uint w=0; w<_withdrawals.length; w = add(w,1)) {
+                uint wStartDate = _withdrawals[i].startDate;
+                uint wEndDate = _withdrawals[i].endDate;
                 
-                Reservation memory res = existingRes[j];
-                
-                if (overlapping(fromDate, toDate, res.fromDate, res.toDate)) {
-                    occupied += res.number;
-                    require(noRooms <= avaliable - occupied, 'Not enough vacant rooms');
+                if (overlapping(wStartDate, wEndDate, fromDate, toDate)) {
+                    isWithdrawed = true;
+                    break;
                 }
+                
+            }
+            
+            if (isWithdrawed) {
+                revert("Some dates are withdrawed");
+            }
+            
+            uint beds = reservation[add(i,2)];
+            uint noRooms = reservation[add(i,3)];
+            uint fullBoard = reservation[add(i,4)];
+            
+            require(fullBoard == 1 || fullBoard == 2, "Full board argument not valid (must be 1 or 2)");
+            
+            if (!checkAvailability(beds, noRooms, fromDate, toDate)) {
+                revert("Rooms not available");
             }
             
             // Calculate pricePerBed// 
-            // TODO: Discounts
+            
+            // Proveriti da li se rezervacija realizuje u glavnoj sezoni
+            bool mainSeason = overlapping(fromDate, toDate, _mainSeasonStart, _mainSeasonEnd) ? true : false;
             
             uint pricePerBed;
+            uint priceType = 0;
             
-            if (priceType == 1) {
-                pricePerBed = _priceHB;
-            } else if (priceType == 2) {
-                pricePerBed = _priceFB;
-            } else if (priceType == 3) {
-                pricePerBed = _priceOS;
+            if (mainSeason) {
+                if (fullBoard == 1) {
+                    priceType = 1;
+                    pricePerBed = _priceHB;
+                } else if (fullBoard == 2) {
+                    priceType = 2;
+                    pricePerBed = _priceFB;
+                } else {
+                    revert("Price type not valid");
+                }
             } else {
-                revert('Price type specified not valid');
+                priceType = 3;
+                pricePerBed = _priceOS;
             }
             
-            totalPrice += beds * pricePerBed;
+            uint kids = reservation[add(i,5)];
             
-            Reservation memory newRes = Reservation(++res_id_counter, fromDate, toDate, noRooms, totalPrice, priceType, false);
+            require(kids <= mul(beds,noRooms), "Number of kids exceeds total number of beds");
+            
+            // totalPrice += (beds*noRooms - kids)*pricePerBed + kids*_kidPrice;
+            totalPrice = add(totalPrice, add(mul(sub(mul(beds,noRooms), kids), pricePerBed), mul(kids, _kidPrice)));
+            
+            _totalReservations = add(_totalReservations, 1);
+            Reservation memory newRes = Reservation(_totalReservations, fromDate, toDate, noRooms, totalPrice, priceType, false, mainSeason, kids);
             _reservations[beds].push(newRes);
-            _totalReservations += 1;
-            
         }
+    }
+    
+    function checkAvailability(uint beds, uint noRooms, uint fromDate, uint toDate) 
+        private
+        view
+        returns (bool)
+    {
+        Reservation[] memory existingRes = _reservations[beds];
+        uint available = _roomsByBedNumbers[uint8(beds)];
+        
+        require(available > 0, "Rooms with desired number of beds doesn't exist");
+        require(available >= noRooms, "Total number of rooms is not enough");
+        
+        uint occupied = 0;
+        
+        for (uint j = 0; j < existingRes.length; j = add(j,1)) {
+                
+            Reservation memory res = existingRes[j];
+            
+            if (overlapping(fromDate, toDate, res.fromDate, res.toDate)) {
+                occupied = add(occupied, res.number);
+                require(noRooms <= sub(available, occupied), 'Not enough vacant rooms');
+            }
+        }
+        
+        return true;
     }
     
     function withdrawRooms(uint startDate, uint endDate)
@@ -332,7 +409,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         consentOfWills
         returns (uint)
     {
-        require(_clause==false, "Contract with clause! Withdrawal of rooms not possible.");
+        require(_clause==false, "Contract with clause -> withdrawal of rooms not possible.");
         
         require(isBefore(startDate, endDate), "Date range not valid");
         
@@ -342,6 +419,9 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         
         bool onTime = isInRange(startDate, _withdrawalPeriod);
         
+        // Treba li proveravati da li je vec povucen termin?
+        // U principu ne moramo, nece se nista lose desiti ako se dva puta izvrsi povracaj istog termina
+        
         if (onTime) {
             // Samo obeleziti da je slobodno
             DateRange memory drange = DateRange(startDate, endDate);
@@ -350,7 +430,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         }  else {
             DateRange memory drange = DateRange(startDate, endDate);
             _withdrawals.push(drange);
-            // TODO: Sracunati odstetu
+            // Racunanje odstete
             uint itDay = startDate;
             uint notOccupiedBeds = 0;
             while (!isSame(itDay, endDate)) {
@@ -360,27 +440,30 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
                 // 2. Pronaci rezervacije za dati dan i izracunati koliko je kreveta popunjeno
                 uint totalBeds = 0;
                 uint occupied = 0;
-                for (uint8 i = 1; i <= _maxBeds; ++i) {
-                    totalBeds += _roomsByBedNumbers[i] * i;
+                for (uint n = 0; n <= _bedOptions.length; n=add(n,1)) {
                     
-                    Reservation[] memory ress = _reservations[i];
+                    uint8 beds = _bedOptions[n];
                     
-                    for (uint j = 0; j < ress.length; ++j) {
+                    totalBeds += mul(_roomsByBedNumbers[beds], beds);
+                    
+                    Reservation[] memory ress = _reservations[beds];
+                    
+                    for (uint j = 0; j < ress.length; j=add(j,1)) {
                         if (dayInRange(itDay, ress[j].fromDate, ress[j].toDate)) {
-                            occupied += ress[j].number * i;
+                            occupied = add(occupied, mul(ress[j].number, beds));
                         }
                     }
                 }
                 
                 // 3. izracunati koliko kreveta nije popunjeno u jednom danu
-                notOccupiedBeds += totalBeds - occupied;
+                notOccupiedBeds = add(notOccupiedBeds, sub(totalBeds, occupied));
                 
                 // Predji na seledeci dan
                 addDays2(itDay, 1);
             }
             
             // 4. izracunati cenu koju agencija mora da plati kao odstetu za ukupan broj nepopunjenioh kreveta
-            uint fine = notOccupiedBeds * _finePerBed;
+            uint fine = mul(notOccupiedBeds, _finePerBed);
             
             _accomodationRepr.transfer(fine);
             
@@ -413,9 +496,12 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         onlyAgencyRepr
         consentOfWills
     {
+        
+        // TODO: Poslati novac nakon uspesne overe
+        
         Reservation[] memory ress = _reservations[beds];
         
-        for (uint i=0; i < ress.length; i++) {
+        for (uint i=0; i < ress.length; i=add(i,1)) {
             
         }
         
@@ -452,12 +538,13 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     function transferOne()
         public
     {
-        require(address(this).balance >= 1, "There is not enough ether!");
+        require(address(this).balance >= 1, "There is not enough ether");
         _accomodationRepr.transfer(address(this).balance);   
     }
     
     /******************************************
     * Get data as bytes
+    * SafeMath not used becasuse those are view functions
     *******************************************/
     
     function getAllResAsBytes()
@@ -465,37 +552,39 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         view
         returns (bytes memory b)
     {
-        // uint256 step = 32*8;
-        b = new bytes(32*8 * _totalReservations);
+        uint256 step = 32*10;
+        b = new bytes(step * _totalReservations);
         uint offset = 0;
         for (uint8 k=0; k<_bedOptions.length; k++) {
-            uint8 bedNum = _bedOptions[k];
+            uint8 bed_num = _bedOptions[k];
             
-            Reservation[] memory ress = _reservations[bedNum];
+            Reservation[] memory ress = _reservations[bed_num];
             
             for (uint i=0; i<ress.length; i++) {
-    		    uint256 id = ress[i].id;
-                uint256 fromDate = ress[i].fromDate;
-                uint256 toDate = ress[i].toDate;
-                uint256 number = ress[i].number;
-                uint256 price = ress[i].price;
-                uint256 priceType = ress[i].priceType;
+    		    // uint256 id = ress[i].id;
+                // uint256 fromDate = ress[i].fromDate;
+                // uint256 toDate = ress[i].toDate;
+                // uint256 number = ress[i].number;
+                // uint256 price = ress[i].price;
+                // uint256 priceType = ress[i].priceType;
                 uint256 provision = ress[i].provision ? 1 : 0;
-                uint256 beds_temp = bedNum;
+                uint256 mainSeason = ress[i].mainSeason ? 1 : 0;
         
     			for (uint j=0; j<32; j++) {
-    			   	b[32*8*i+j+offset] = byte(uint8(id / (2 ** (8 * (31 - j)))));
-        			b[32*8*i+j+32+offset] = byte(uint8(fromDate / (2 ** (8 * (31 - j)))));
-        			b[32*8*i+j+32*2+offset] = byte(uint8(toDate / (2 ** (8 * (31 - j)))));
-        			b[32*8*i+j+32*3+offset] = byte(uint8(number / (2 ** (8 * (31 - j)))));
-        			b[32*8*i+j+32*4+offset] = byte(uint8(price / (2 ** (8 * (31 - j)))));
-        			b[32*8*i+j+32*5+offset] = byte(uint8(priceType / (2 ** (8 * (31 - j)))));
-        			b[32*8*i+j+32*6+offset] = byte(uint8(provision / (2 ** (8 * (31 - j)))));
-        			b[32*8*i+j+32*7+offset] = byte(uint8(beds_temp / (2 ** (8 * (31 - j)))));
+    			   	b[step*i+j+offset] = byte(uint8(ress[i].id / (2 ** (8 * (31 - j)))));
+        			b[step*i+j+32+offset] = byte(uint8(ress[i].fromDate / (2 ** (8 * (31 - j)))));
+        			b[step*i+j+32*2+offset] = byte(uint8(ress[i].toDate / (2 ** (8 * (31 - j)))));
+        			b[step*i+j+32*3+offset] = byte(uint8(ress[i].number / (2 ** (8 * (31 - j)))));
+        			b[step*i+j+32*4+offset] = byte(uint8(ress[i].price / (2 ** (8 * (31 - j)))));
+        			b[step*i+j+32*5+offset] = byte(uint8(ress[i].priceType / (2 ** (8 * (31 - j)))));
+        			b[step*i+j+32*6+offset] = byte(uint8(provision / (2 ** (8 * (31 - j)))));
+        			b[step*i+j+32*7+offset] = byte(uint8(bed_num / (2 ** (8 * (31 - j)))));
+        			b[step*i+j+32*8+offset] = byte(uint8(mainSeason / (2 ** (8 * (31 - j)))));
+        			b[step*i+j+32*9+offset] = byte(uint8(ress[i].kids / (2 ** (8 * (31 - j)))));
     			}
             }
             
-            offset += 32*8*ress.length;
+            offset += step*ress.length;
             
         }
     }
@@ -508,7 +597,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         Reservation[] memory ress = _reservations[beds];
         
         // uint256 size = 32 * 5 * ress.length;
-        uint256 step = 32*8;
+        uint256 step = 32*10;
         // uint256 size = 32*8 * ress.length;
         // uint256 counter = 0;
         b = new bytes(step * ress.length); 
@@ -544,8 +633,9 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
             uint256 price = ress[i].price;
             uint256 priceType = ress[i].priceType;
             uint256 provision = ress[i].provision ? 1 : 0;
-            uint beds_temp = beds;
-        
+            uint256 mainSeason = ress[i].mainSeason ? 1 : 0;
+            //uint256 kids = ress[i].kids;
+            
 			for (uint j=0; j<32; j++) {
 			   	b[step*i+j] = byte(uint8(id / (2 ** (8 * (31 - j)))));
     			b[step*i+j+32] = byte(uint8(fromDate / (2 ** (8 * (31 - j)))));
@@ -554,11 +644,35 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     			b[step*i+j+32*4] = byte(uint8(price / (2 ** (8 * (31 - j)))));
     			b[step*i+j+32*5] = byte(uint8(priceType / (2 ** (8 * (31 - j)))));
     			b[step*i+j+32*6] = byte(uint8(provision / (2 ** (8 * (31 - j)))));
-    			b[step*i+j+32*7] = byte(uint8(beds_temp / (2 ** (8 * (31 - j)))));
+    			b[step*i+j+32*7] = byte(uint8(beds / (2 ** (8 * (31 - j)))));
+    			b[step*i+j+32*8] = byte(uint8(mainSeason / (2 ** (8 * (31 - j)))));
+    			b[step*i+j+32*9] = byte(uint8(ress[i].kids / (2 ** (8 * (31 - j)))));
 			}
         }
         
         return b;
+    }
+    
+    function getWithdrawalsAsBytes() 
+        public
+        view
+        returns (bytes memory b)
+    {
+        uint256 len = _withdrawals.length;
+        
+        uint256 step = 32*2;
+        // uint256 counter = 0;
+        b = new bytes(step * len); 
+        
+        for (uint i=0; i<len; ++i) {
+            uint256 startDate = _withdrawals[i].startDate;
+            uint256 endDate = _withdrawals[i].endDate;
+            
+            for (uint j=0; j<32; j++) {
+                b[step*i+j] = byte(uint8(startDate / (2 ** (8 * (31 - j)))));
+        		b[step*i+j+32] = byte(uint8(endDate / (2 ** (8 * (31 - j)))));
+            }
+        }
     }
     
     function getAA(uint256 beds)
@@ -603,7 +717,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         uint256 fpb = _finePerBed;
         */
         
-        b = new bytes(32 * 16); 
+        b = new bytes(32 * 22); 
         
         // for (uint8 i = 0; i < 16; ++i) {
         for (uint j=0; j<32; j++) {
@@ -627,9 +741,17 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
 			b[j+32*14] = byte(uint8(_commision / (2 ** (8 * (31 - j)))));
 			b[j+32*15] = byte(uint8(_finePerBed / (2 ** (8 * (31 - j)))));
 			
+			b[j+32*16] = byte(uint8(address(this).balance / (2 ** (8 * (31 - j)))));
+			b[j+32*17] = byte(uint8(_aggreementDate / (2 ** (8 * (31 - j)))));
+			b[j+32*18] = byte(uint8(_identifiedAgRepr / (2 ** (8 * (31 - j)))));
+			b[j+32*19] = byte(uint8(_identifiedAccRepr / (2 ** (8 * (31 - j)))));
+			
+			b[j+32*20] = byte(uint8(_mainSeasonStart / (2 ** (8 * (31 - j)))));
+			b[j+32*21] = byte(uint8(_mainSeasonEnd / (2 ** (8 * (31 - j)))));
+			
 		}
         // }
-        
+
         return b;
         
     }

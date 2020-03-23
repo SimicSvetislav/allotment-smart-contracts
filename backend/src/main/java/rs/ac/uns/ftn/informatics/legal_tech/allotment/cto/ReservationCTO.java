@@ -11,5 +11,6 @@ public @Data class ReservationCTO {
 	private Integer beds;
 	private Long noRooms;
 	private Integer priceType; 
+	private Integer kids;
 	
 }

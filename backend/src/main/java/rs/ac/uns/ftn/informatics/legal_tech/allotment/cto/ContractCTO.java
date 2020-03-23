@@ -1,7 +1,6 @@
 package rs.ac.uns.ftn.informatics.legal_tech.allotment.cto;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.util.List;
 
 import lombok.Data;
@@ -23,5 +22,4 @@ public @Data class ContractCTO {
 	private BigInteger finePerBed;
 	private String courtName;
 	private String courtLocation;
-	
 }

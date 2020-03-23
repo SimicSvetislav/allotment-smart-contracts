@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.informatics.legal_tech.allotment.services;
 
+import java.util.NoSuchElementException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,22 @@ public class OrganizationService {
 	private OrganizationRepository repository;
 	
 	public Organization findOneById(Long id) {
-		return repository.findById(id).get();
+		
+		Organization org = null;
+		try {
+			org = repository.findById(id).get();
+		} catch (NoSuchElementException e) {
+			System.out.println("Can't find organization");
+			e.getMessage();
+		}
+		
+		return org;
+	}
+
+	public Organization save(Organization org) {
+
+		return repository.save(org);
+		
 	}
 	
 }

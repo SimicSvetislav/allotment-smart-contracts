@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.informatics.legal_tech.allotment.controllers;
 
+import java.math.BigInteger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ContractCTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ReservationCTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.ContractAddressPair;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.DateRange;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.TransferPair;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.services.ContractService;
 
@@ -134,7 +137,7 @@ public class ContractsController {
 	}
 	
 	@GetMapping(path="/balances")
-	public ResponseEntity<Double[]> balanceUser() {
+	public ResponseEntity<Double[]> balancesUser() {
 		
 		Double[] balances = new Double[10];
 		
@@ -144,6 +147,20 @@ public class ContractsController {
 		}
 		
 		return new ResponseEntity<Double[]>(balances, HttpStatus.OK);
+		
+	}
+	
+	@GetMapping(path="/balancesWei")
+	public ResponseEntity<BigInteger[]> balancesWei() {
+		
+		BigInteger[] balances = new BigInteger[10];
+		
+		for (int i=0; i<10; i++) {
+			BigInteger balance = service.getWeiBalanceAccount(new Long(i+1));
+			balances[i] = balance;
+		}
+		
+		return new ResponseEntity<BigInteger[]>(balances, HttpStatus.OK);
 		
 	}
 	
@@ -276,4 +293,28 @@ public class ContractsController {
 		
 	}
 	
+	@PostMapping(path="/withdraw/{id}/{address}")
+	public ResponseEntity<String> withdraw(
+			@RequestBody DateRange range,
+			@PathVariable("id") Long userId,
+			@PathVariable("address") String address) {
+		
+		
+		String retVal = service.withdraw(range, address, userId);
+
+		
+		return new ResponseEntity<String>(retVal, HttpStatus.OK);
+		
+	}
+	
+	@GetMapping(path="/withdrawal/{contract}")
+	public ResponseEntity<String> getWithdrawals(@PathVariable("contract") String contract) {
+		
+		
+		String retVal = service.getWithdrawals(contract);
+
+		
+		return new ResponseEntity<String>(retVal, HttpStatus.OK);
+		
+	}
 }
