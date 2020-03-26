@@ -1,3 +1,4 @@
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EventBrokerService } from './services/events/event-broker.service';
 import { JwtInterceptor } from './jwt.interceptor';
 import { TokenInterceptor } from './token.interceptor';
@@ -16,12 +17,16 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoginComponent } from './login/login.component';
 import { ProposalsComponent } from './proposals/proposals.component';
 import { ProfileComponent } from './profile/profile.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { ContractsComponent } from './contracts/contracts.component';
 
 const appRoutes: Routes = [
   { path: 'sc-form', component: ContractFormComponent },
   { path: 'login', component: LoginComponent },
   { path: 'proposals', component: ProposalsComponent },
   { path: 'profile', component: ProfileComponent },
+  { path: 'contracts', component: ContractsComponent },
+  { path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({
@@ -30,7 +35,9 @@ const appRoutes: Routes = [
     ContractFormComponent,
     LoginComponent,
     ProposalsComponent,
-    ProfileComponent
+    ProfileComponent,
+    NotFoundComponent,
+    ContractsComponent
   ],
   imports: [
     BrowserModule,
@@ -47,6 +54,7 @@ const appRoutes: Routes = [
     }),
     HttpClientModule,
     BrowserAnimationsModule,
+    NgbModule,
   ],
   providers: [
     {
@@ -59,7 +67,7 @@ const appRoutes: Routes = [
       useClass: JwtInterceptor,
       multi: true
     },
-    AuthService,
+    // AuthService,
     EventBrokerService,
   ],
   bootstrap: [AppComponent]

@@ -5,7 +5,12 @@ import { JwtResponse, Token, AuthLoginInfo } from './../../../types';
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpClient } from '@angular/common/http';
 
-@Injectable()
+const ACTIVE_TAB_KEY = 'activeTab';
+const USER_KEY = 'userId';
+
+@Injectable({
+  providedIn: 'root',
+})
 export class AuthService {
 
   public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -68,6 +73,24 @@ export class AuthService {
 
   public getRefresh(): boolean {
     return this.refresh;
+  }
+
+  public setActiveTab(value: string) {
+    localStorage.setItem(ACTIVE_TAB_KEY, value);
+  }
+
+  public getActiveTab(): string {
+    const at = localStorage.getItem(ACTIVE_TAB_KEY);
+    return at != null ? at : 'Profile';
+  }
+
+  public saveUser(user: number) {
+    window.sessionStorage.removeItem(USER_KEY);
+    window.sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+  }
+
+  public getUser(): string {
+    return sessionStorage.getItem(USER_KEY);
   }
 
 }

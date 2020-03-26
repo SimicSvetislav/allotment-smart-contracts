@@ -1,7 +1,7 @@
 <nav id="main-navbar" class="navbar-default navbar navbar-fixed-top navbar-expand-lg navbar-dark bg-dark justify-content-between">
     <a class="navbar-brand" href="#">
       <img src="assets/smart-contract-512.png" width="30" height="30" class="d-inline-block align-top" alt="">
-      Admin module
+      Representative module
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
       aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,29 +10,17 @@
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
         <li class="nav-item" [ngClass]="activeTab=='Profile' ? 'active' : 'inactive'">
-          <a class="nav-link" href="#" (click)="navigate('Profile', '/profile')">Profile <span
-              class="sr-only">(current)</span></a>
+          <a class="nav-link" href="#" (click)="navigate('Profile', '/profile')">Profile 
+            <!-- <spanclass="sr-only">(current)</span>--></a>
         </li>
-        <li class="nav-item" [ngClass]="activeTab=='Agents' ? 'active' : 'inactive'">
-          <a class="nav-link" href="#" (click)="navigate('Agents', '/agents')">Agents </a>
+        <li class="nav-item" [ngClass]="activeTab=='Contracts' ? 'active' : 'inactive'">
+          <a class="nav-link" href="#" (click)="navigate('Contracts', '/contracts')">Contracts </a>
         </li>
-        <li class="nav-item" [ngClass]="activeTab=='Users' ? 'active' : 'inactive'">
-          <a class="nav-link" href="#" (click)="navigate('Users', '/users')">Users </a>
+        <li class="nav-item" [ngClass]="activeTab=='Proposals' ? 'active' : 'inactive'">
+          <a class="nav-link" href="#" (click)="navigate('Proposals', '/proposals')">Proposals </a>
         </li>
-        <li class="nav-item" [ngClass]="activeTab=='Extras' ? 'active' : 'inactive'">
-          <a class="nav-link" href="#" (click)="navigate('Extras', '/extras')">Extras </a>
-        </li>
-        <li class="nav-item" [ngClass]="activeTab=='Categories' ? 'active' : 'inactive'">
-          <a class="nav-link" href="#" (click)="navigate('Categories', '/categories')">Categories </a>
-        </li>
-        <li class="nav-item" [ngClass]="activeTab=='Types' ? 'active' : 'inactive'">
-          <a class="nav-link" href="#" (click)="navigate('Types', '/types')">Types </a>
-        </li>
-        <li class="nav-item" [ngClass]="activeTab=='Comments' ? 'active' : 'inactive'">
-          <a class="nav-link" href="#" (click)="navigate('Comments', '/comments')">Comments </a>
-        </li>
-        <li class="nav-item" [ngClass]="activeTab=='Admins' ? 'active' : 'inactive'">
-          <a class="nav-link" href="#" (click)="navigate('Admins', '/admins')">Admins </a>
+        <li class="nav-item" [ngClass]="activeTab=='Propose' ? 'active' : 'inactive'">
+          <a class="nav-link" href="#" (click)="navigate('Propose', '/sc-form')">Propose </a>
         </li>
       </ul>
   
@@ -42,7 +30,7 @@
         <button class="btn rounded-btn" (click)="logout()">Sign out</button>
       </div>
       <ng-template #other_content>
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit" (click)="login()">Log in</button>
+        <button class="btn rounded-btn" type="submit" (click)="login()">Log in</button>
       </ng-template>
   
   

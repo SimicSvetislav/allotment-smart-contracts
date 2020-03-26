@@ -46,6 +46,7 @@ export class LoginComponent implements OnInit {
 
         this.authService.setToken(data as JwtResponse);
         this.authService.isUserLoggedIn.next(true);
+        this.authService.saveUser(data.id);
 
         this.isLoginFailed = false;
         this.isLoggedIn = true;

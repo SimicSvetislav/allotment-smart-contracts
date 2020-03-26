@@ -55,7 +55,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     
     uint8 public _smallKidDiscount;
     
-    uint8 public _offSeasonMinimum;
+    uint8 public _preSeasonMinimum;
     uint8 public _badOffSeasonMaxPenalty;
     
     uint public _totalBeds;
@@ -98,6 +98,8 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     
     // Events
     event MyEvent(uint256 code, string msg);
+    
+    uint256 _code = 0;
     
     modifier onlyAgencyRepr 
     {
@@ -142,7 +144,9 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     // [3] - number of rooms with three beds
     // [4] - ...
     // [5] - ...
-    // ... (TODO: Razmisliti o prosirenju)
+    // ... 
+    // NAPOMENA - obavezno je poslati nule ako postoje sobe sa odredjenim brojem kreveta koje nisu zastupljene, 
+    // a pri tome postoje i sobe sa vise kreveta koje su zastupljene     
     //------------------------------------------
     // uint[4] periods
     // [0] - informing period
@@ -179,7 +183,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         
         _smallKidDiscount = uint8(someConstrains[1]);
         
-        _offSeasonMinimum = uint8(someConstrains[2]);
+        _preSeasonMinimum = uint8(someConstrains[2]);
         _badOffSeasonMaxPenalty = uint8(someConstrains[3]);
         
         _mainSeasonStart = someConstrains[4];
@@ -337,6 +341,8 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
             
             require(fullBoard == 1 || fullBoard == 2, "Full board argument not valid (must be 1 or 2)");
             
+            
+            
             if (!checkAvailability(beds, noRooms, fromDate, toDate)) {
                 revert("Rooms not available");
             }
@@ -385,6 +391,10 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         Reservation[] memory existingRes = _reservations[beds];
         uint available = _roomsByBedNumbers[uint8(beds)];
         
+        if (_restriction) {
+            available = div(mul(available, _badOffSeasonMaxPenalty), 100);
+        }
+        
         require(available > 0, "Rooms with desired number of beds doesn't exist");
         require(available >= noRooms, "Total number of rooms is not enough");
         
@@ -417,7 +427,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         
         require(isBeforeOrSame(endDate, _endDate), "End date out of range");
         
-        bool onTime = isInRange(startDate, _withdrawalPeriod);
+        bool onTime = isInRange(startDate, _informingPeriod);
         
         // Treba li proveravati da li je vec povucen termin?
         // U principu ne moramo, nece se nista lose desiti ako se dva puta izvrsi povracaj istog termina
@@ -459,7 +469,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
                 notOccupiedBeds = add(notOccupiedBeds, sub(totalBeds, occupied));
                 
                 // Predji na seledeci dan
-                addDays2(itDay, 1);
+                itDay = addDays2(itDay, 1);
             }
             
             // 4. izracunati cenu koju agencija mora da plati kao odstetu za ukupan broj nepopunjenioh kreveta
@@ -477,7 +487,14 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         onlyAgencyRepr
         consentOfWills
     {
-        // TODO: Proveriti postoje li uslovi i raspodeliti ether
+        uint newTimestamp = addDays(_aggreementDate, _withdrawalPeriod);
+
+        // Ako je prosao perio za odsutanak od ugovora, agencija placa odstetu
+        if (isAfterOrSame(newTimestamp, now)) {
+            uint compensation = _totalBeds  * _finePerBed;
+            _accomodationRepr.transfer(compensation);
+        }
+        
         destroy();
     }
     
@@ -486,25 +503,98 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         onlyAgencyRepr
         consentOfWills
     {
-        // TODO: Proveriti postoje li uslovi i raspodeliti ether
+        
+        // Ako smestaj otkazuje ugovor nema prava na nadoknadu, kao u situaciji u kojoj bi agencija raskinula ugovor
+        
         destroy();
     }
     
-    function verifyRoomingList(uint beds/*,uint id*/)
+    function verifyRoomingList(uint beds, uint id)
         public
-		view
+        payable
         onlyAgencyRepr
         consentOfWills
     {
         
         // TODO: Poslati novac nakon uspesne overe
         
-        Reservation[] memory ress = _reservations[beds];
-        
-        for (uint i=0; i < ress.length; i=add(i,1)) {
+        for (uint i=0; i < _reservations[beds].length; i=add(i,1)) {
+            if (id == _reservations[beds][i].id) {
+                uint256 compensation = div(mul(_reservations[beds][i].price, _commision), 100);
+                _accomodationRepr.transfer(compensation);
+                _reservations[beds][i].provision = true;
+            }
             
         }
         
+    }
+    
+    function checkOffseason() 
+        public
+        returns (uint256)
+    {
+        if (_restriction) {
+            revert("Already restricted");
+        }
+        
+        if (isAfter(now, _mainSeasonEnd)) {
+            revert("Main season already ended");
+        }
+        
+        uint256 preseasonDays = diffDays(_startDate, _mainSeasonStart);
+        uint256 totalNights = mul(_totalBeds, preseasonDays);
+        uint256 totalUnused = 0;
+        
+        uint itDay = _startDate;
+        
+        while (!isSame(itDay, _mainSeasonStart)) {
+            
+            // Prodji kroz sve rezervacije i sracunaj koliko nocenja nije rezervisano
+            uint occupied = occupiedBeds(itDay);
+            
+            totalUnused = add(totalUnused, sub(_totalBeds, occupied));
+            
+            itDay = addDays(itDay, 1);
+        }
+        
+        // Sracunati koliko procenata od ukupnog broja nocenja je iskorisceno
+        // Brojevi se mnoze sa 10 000 kako bi se dobila tacnost na dve decimale 
+        
+        uint256 factor = 10000;
+        uint256 percentUsed = div(mul(totalUnused, factor), mul(totalNights, factor));
+        
+        uint256 threshold = mul(_preSeasonMinimum, 100); 
+        if (percentUsed < threshold) {
+            _restriction = true;
+        }
+        
+        return percentUsed;
+        
+    }
+    
+    // Returns number of occupied beds on certain day 
+    function occupiedBeds(uint256 itDay)
+        // private
+        public // For testing purposes
+        view
+        returns (uint256)
+    {
+        uint256 occupied = 0;
+        
+        for (uint n=0; n<_bedOptions.length; n=add(n,1)) {
+            uint beds = _bedOptions[n];
+            
+            Reservation[] memory ress = _reservations[beds];
+            
+            for (uint j=0; j<ress.length; j=add(j,1)) {
+                if (dayInRange(itDay, ress[j].fromDate, ress[j].toDate)) {
+                    occupied = add(occupied, mul(ress[j].number, beds));
+                }
+            }
+            
+        }
+        
+        return occupied;
     }
     
     function contractBalance()
@@ -731,7 +821,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
 			b[j+32*6] = byte(uint8(_kidAgeLimit / (2 ** (8 * (31 - j)))));
 			b[j+32*7] = byte(uint8(_smallKidDiscount / (2 ** (8 * (31 - j)))));
 			
-			b[j+32*8] = byte(uint8(_offSeasonMinimum / (2 ** (8 * (31 - j)))));
+			b[j+32*8] = byte(uint8(_preSeasonMinimum / (2 ** (8 * (31 - j)))));
 			b[j+32*9] = byte(uint8(_badOffSeasonMaxPenalty / (2 ** (8 * (31 - j)))));
 			b[j+32*10] = byte(uint8(_withdrawalPeriod / (2 ** (8 * (31 - j)))));
 			b[j+32*11] = byte(uint8(_informingPeriod / (2 ** (8 * (31 - j)))));

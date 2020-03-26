@@ -15,13 +15,14 @@ export class AppComponent implements OnInit/*, AfterViewInit*/ {
   title = 'Frontend';
 
   logged = false;
-  activeTab = 'Profile';
+  activeTab: string;
   id;
 
   private myEventListener: IEventListener;
 
   constructor(private router: Router, private authService: AuthService,
-              private eventBroker: EventBrokerService, private cdr: ChangeDetectorRef) {
+              private eventBroker: EventBrokerService,
+              private cdr: ChangeDetectorRef) {
                 /*this.myEventListener = eventBroker.listen('refresh', () => {
                   this.ngOnInit();
                 });*/
@@ -31,11 +32,15 @@ export class AppComponent implements OnInit/*, AfterViewInit*/ {
               }
 
   ngOnInit(): void {
+
+    this.activeTab = this.authService.getActiveTab();
+
     if (this.authService.isAuthenticated()) {
       this.logged = true;
     } else {
       this.logged = false;
     }
+
   }
 
   logout() {
@@ -54,6 +59,7 @@ export class AppComponent implements OnInit/*, AfterViewInit*/ {
 
   navigate(tabName: string, path: string) {
 
+    this.authService.setActiveTab(tabName);
     this.activeTab = tabName;
 
     this.router.navigateByUrl(path);

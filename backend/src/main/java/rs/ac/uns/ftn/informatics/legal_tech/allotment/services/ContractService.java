@@ -39,6 +39,8 @@ import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Contract;
 public class ContractService {
 
 	private Long PLATFORM_ACCOUNT = 10L;
+	private BigInteger GAS_PRICE = BigInteger.valueOf(32000000000L);
+	private BigInteger GAS_LIMIT = BigInteger.valueOf(6300000L);
 	
 	// private String PRIVATE_KEY="0x29b269ae87db6e792a0aaff8be7429e634aadf273266a7fb6589a34e0191ab68";
 	// private String ADDRESS="0x11eccd64a00f8c0a1f81180ced0d538072138dbb";
@@ -60,7 +62,7 @@ public class ContractService {
 		
 		try {
 			deployedContract = Allotment.deploy(web3j, reprService.getCredentials(PLATFORM_ACCOUNT), 
-					DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT,
+					GAS_PRICE, GAS_LIMIT,
 					contract.getAgencyRepr(), 
 					contract.getAccomodationRepr(),
 					contract.getStartDate(), contract.getEndDate(), 

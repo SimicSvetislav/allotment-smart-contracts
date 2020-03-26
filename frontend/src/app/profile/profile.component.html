@@ -1,1 +1,42 @@
-<p>profile works!</p>
+<p>
+  Logged in as <b>{{repr.fullName}}</b>
+</p>
+<p>
+  Via <b>{{repr.email}}</b>
+</p>
+<p>
+  <button class="btn btn-secondary float-left ml-5" type="button" data-toggle="collapse" data-target="#collapseReprInfo" aria-expanded="true" aria-controls="collapseReprInfo">Representaitve info</button>
+  <button class="btn btn-secondary float-right mr-5" type="button" data-toggle="collapse" data-target="#collapseOrgInfo" aria-expanded="true" aria-controls="collapseOrgInfo">Organization info</button>
+</p>
+<div class="row">
+  <div class="col">
+    <div class="collapse multi-collapse" [ngbCollapse]="isCollapsedReprInfo" id="collapseReprInfo">
+      <div class="card card-body">
+        Full name: <b>{{repr.fullName}}</b>
+        <br />
+        Email: <b>{{repr.email}}</b>
+        <br />
+        Display name: <b>{{repr.displayName}}</b>
+        <br />
+        Phone number: <b>{{repr.phoneNumber}}</b>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="collapse multi-collapse" [ngbCollapse]="isCollapsedOrgInfo" id="collapseOrgInfo">
+      <div class="card card-body">
+        Type: <b>{{repr.fullName}}</b>
+        <br />
+        Name: <b>{{repr.orgName}}</b>
+        <br />
+        Account number: <b>{{repr.orgAccount}}</b>
+        <br />
+        Address: <b>{{repr.orgAddress}}</b>
+        <br />
+        City: <b>{{repr.orgCity}}</b>
+        <br />
+        Country: <b>{{repr.orgCountry}}</b>
+      </div>
+    </div>
+  </div>
+</div>

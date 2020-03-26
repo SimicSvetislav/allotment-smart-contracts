@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
+import org.web3j.tx.gas.DefaultGasProvider;
 
 import io.reactivex.disposables.Disposable;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Account;
@@ -77,6 +78,8 @@ public class InitializationBean {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println(DefaultGasProvider.GAS_PRICE);
 		
 		// Adding transaction listener
 		/*Disposable subscription = web3j.transactionFlowable().subscribe(tx -> {
