@@ -5,8 +5,6 @@ import java.util.Date;
 import lombok.Data;
 
 public @Data class DateRange {
-	
 	private Date startDate;
 	private Date endDate;
-
 }

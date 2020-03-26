@@ -13,7 +13,7 @@ import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ReservationCTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.ContractDTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.DateRange;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.ReservationDTO;
-import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.RoomsInfo;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.RoomsInfoDTO;
 
 public class SCParser {
 
@@ -221,14 +221,14 @@ public class SCParser {
 	
 	private final static int ROOMS_INFO_PARSE_STEP = 32 * 2;
 	
-	public static List<RoomsInfo> parseAllRoomsInfo(byte[] bytes) {
+	public static List<RoomsInfoDTO> parseAllRoomsInfo(byte[] bytes) {
 		
-		List<RoomsInfo> info = new ArrayList<RoomsInfo>();
+		List<RoomsInfoDTO> info = new ArrayList<RoomsInfoDTO>();
 		
 		int size = bytes.length / ROOMS_INFO_PARSE_STEP;
 		
 		for (int i=0; i<size; ++i) {
-			RoomsInfo ri = parseRoomsInfo(Arrays.copyOfRange(bytes, i*ROOMS_INFO_PARSE_STEP, (i+1)*ROOMS_INFO_PARSE_STEP));
+			RoomsInfoDTO ri = parseRoomsInfo(Arrays.copyOfRange(bytes, i*ROOMS_INFO_PARSE_STEP, (i+1)*ROOMS_INFO_PARSE_STEP));
 			info.add(ri);
 		}
 		
@@ -236,8 +236,8 @@ public class SCParser {
 		
 	}
 	
-	private static RoomsInfo parseRoomsInfo(byte[] riBytes) {
-		RoomsInfo ri = new RoomsInfo();
+	private static RoomsInfoDTO parseRoomsInfo(byte[] riBytes) {
+		RoomsInfoDTO ri = new RoomsInfoDTO();
 		
 		// Get beds
 		BigInteger bi = new BigInteger(Arrays.copyOfRange(riBytes, 0, 32));

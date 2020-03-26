@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.informatics.legal_tech.allotment.entities;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,10 +20,13 @@ public @Data class Contract {
 	private String address;
 	private String status;
 	
+	private Date startDate;
+	private Date endDate;
+	
 	@ManyToOne
 	private Agency agency;
 	
 	@ManyToOne
-	private Organization org;
+	private Accomodation accomodation;
 	
 }

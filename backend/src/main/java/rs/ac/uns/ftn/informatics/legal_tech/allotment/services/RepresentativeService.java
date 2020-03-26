@@ -76,4 +76,8 @@ public class RepresentativeService {
 		
 	}
 
+	public Representative getById(Long id) {
+		return repository.findById(id).get();
+	}
+
 }

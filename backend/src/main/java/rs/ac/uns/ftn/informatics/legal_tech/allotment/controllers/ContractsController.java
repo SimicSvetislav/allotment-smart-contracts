@@ -1,6 +1,11 @@
 package rs.ac.uns.ftn.informatics.legal_tech.allotment.controllers;
 
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +23,14 @@ import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ReservationCTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.ContractAddressPair;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.DateRange;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.TransferPair;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Accomodation;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Contract;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.ContractRoomsInfo;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Hotel;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.RoomsInfo;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.repositories.AccomodationRepository;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.services.ContractService;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.services.HotelService;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -27,6 +39,15 @@ public class ContractsController {
 	
 	@Autowired
 	private ContractService service;
+	
+	@Autowired
+	private HotelService hotelService;
+	
+	@Autowired
+	private ContractService contracService;
+	
+	@Autowired
+	private AccomodationRepository accRepo;
 	
 	@GetMapping(path="/deployA")
 	public ResponseEntity<String> deployA() {
@@ -242,6 +263,88 @@ public class ContractsController {
 			@RequestBody ContractCTO contract) {
 		
 		
+		// Proveriti da li hoteli pripadaju istoj organizaciji
+		List<BigInteger> hotels = contract.getHotels();
+		if (hotels.size() <= 0) {
+			return new ResponseEntity<String>("Hotels not listed", HttpStatus.BAD_REQUEST);
+		}
+		
+		Long orgId = accRepo.findByAccount(contract.getAccomodationRepr()).getId();
+
+		// Raspolozivi kapacitet u hotelima
+		// kljuc - broj kreveta
+		// vredost - broj soba sa odredjenim brojem kreveta
+		Map<Integer, Integer> capacity = new HashMap<Integer, Integer>();
+		
+		for (BigInteger id: hotels) {
+			
+			Hotel hotel = hotelService.findById(id.longValue());
+			Accomodation org = hotel.getOrg();
+			if (org.getId() != orgId) {
+				return new ResponseEntity<String>("Hotels do not belong to organization", HttpStatus.BAD_REQUEST);
+			}
+			
+			// Dodaj odgovarajuce kapacitete raspolozive u hotelu
+			List<RoomsInfo> riList = hotelService.getRoomsInfo(hotel.getId());
+			for (RoomsInfo ri : riList) {
+				capacity.put(ri.getBeds(), capacity.getOrDefault(ri.getBeds(), 0) + ri.getNoRooms());
+			}
+			
+		}
+		
+		// Belezenje smestaja koji je zauzet u zeljenom terminu
+		Map<Integer, Integer> occupied = new HashMap<Integer, Integer>();
+		List<Contract> deployedContracts = contracService.findByAcc(orgId);
+		
+		for (Contract c : deployedContracts) {
+			
+			Date cStartDate = c.getStartDate();
+			Date cEndDate = c.getEndDate();
+			
+			Date ctoStartDate = new Date(contract.getStartDate().longValue() * 1000);
+			Date ctoEndDate = new Date(contract.getEndDate().longValue() * 1000);
+			
+			// Dodaj u zauzete samo ako se 
+			if (!(cStartDate.after(ctoEndDate) ||
+				  isSameDay(cStartDate, ctoEndDate) ||
+				  ctoStartDate.after(cEndDate) ||
+				  isSameDay(ctoStartDate, cEndDate)
+				)) {
+				List<ContractRoomsInfo> cris = contracService.findByContract_id(c.getId());
+				for (ContractRoomsInfo cri : cris) {
+					occupied.put(cri.getBeds(), occupied.getOrDefault(cri.getBeds(), 0) + cri.getNoRooms());
+				}
+			}
+		}
+
+		List<BigInteger> roomsInfo = contract.getRoomsInfo();
+		Map<Integer, Integer> lookingFor = new HashMap<Integer, Integer>();
+		for (int i=1; i<roomsInfo.size(); ++i) {
+			int rooms = roomsInfo.get(i).intValue();
+			if (rooms != 0) {
+				lookingFor.put(i, rooms);
+			}
+		}
+		
+		System.out.println("Capacity: " + capacity);
+		System.out.println("Occupied: " + occupied);
+		System.out.println("Looking for: " + lookingFor);
+		
+		// TODO Proveriti da li je dovoljno soba na raspolaganju
+		
+		// Preskace se prvi broj jer je to ukupan broj kreveta
+		for (Integer bedNum : lookingFor.keySet()) {
+			int demand = lookingFor.get(bedNum);
+			
+			int totalCap = capacity.getOrDefault(bedNum, 0);
+			int rented = occupied.getOrDefault(bedNum, 0);
+			
+			if (demand > totalCap - rented) {
+				return new ResponseEntity<String>("Rooms not available for rent!", HttpStatus.OK);
+			}
+			
+		}
+		
 		String retVal = service.deployAllotment(contract);
 
 		
@@ -316,5 +419,21 @@ public class ContractsController {
 		
 		return new ResponseEntity<String>(retVal, HttpStatus.OK);
 		
+	}
+	
+	@GetMapping(path="/initialTransferValue/{contract}")
+	public ResponseEntity<String> getinitialTransferValue(@PathVariable("contract") String contract) {
+		
+		
+		String retVal = service.getinitialTransferValue(contract);
+
+		
+		return new ResponseEntity<String>(retVal, HttpStatus.OK);
+		
+	}
+	
+	private boolean isSameDay(Date date1, Date date2) {
+	    SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+	    return fmt.format(date1).equals(fmt.format(date2));
 	}
 }

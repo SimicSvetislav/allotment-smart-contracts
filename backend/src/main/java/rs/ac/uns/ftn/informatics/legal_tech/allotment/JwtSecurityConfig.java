@@ -71,6 +71,7 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/signup/**").permitAll()
                 //.antMatchers("/test/**").permitAll()
                 .antMatchers("/test/**").hasRole("REPRESENTATIVE")
+                .antMatchers("/repr/**").hasRole("REPRESENTATIVE")
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

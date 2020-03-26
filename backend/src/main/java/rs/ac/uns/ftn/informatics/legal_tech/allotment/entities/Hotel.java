@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import lombok.Data;
 
@@ -15,8 +16,11 @@ public @Data class Hotel {
 	private Long id;
 	
 	private String name;
+	private String country;
 	private String city;
 	private String address;
 	
+	@ManyToOne
+	private Accomodation org;
 	
 }

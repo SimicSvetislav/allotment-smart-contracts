@@ -9,20 +9,16 @@ import javax.persistence.ManyToOne;
 import lombok.Data;
 
 @Entity
-public @Data class Representative {
-	
+public @Data class RoomsInfo {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	private String fullName;
-	private String displayName;
-	private String password;
-	private String email;
-	private String phoneNumber;
-	// private Long account_id;
+	private Integer beds;
+	private Integer noRooms;
 	
 	@ManyToOne
-	private Organization representing;
-
+	private Hotel hotel;
+	
 }

@@ -8,6 +8,6 @@ import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Account;
 
 public interface AccountsRepository extends JpaRepository<Account, Long> {
 
-	Account findByAccount(String account);
+	public Account findByAccount(String account);
 
 }

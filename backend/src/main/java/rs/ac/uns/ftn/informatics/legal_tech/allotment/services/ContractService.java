@@ -3,6 +3,7 @@ package rs.ac.uns.ftn.informatics.legal_tech.allotment.services;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -32,8 +33,16 @@ import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ReservationCTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.ContractDTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.DateRange;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.ReservationDTO;
-import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.RoomsInfo;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.RoomsInfoDTO;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Accomodation;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Agency;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Contract;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.ContractRoomsInfo;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Hotel;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.repositories.AccomodationRepository;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.repositories.AgencyRepository;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.repositories.ContractRepository;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.repositories.ContractRoomsInfoRepository;
 
 @Service
 public class ContractService {
@@ -50,10 +59,22 @@ public class ContractService {
 	private Web3j web3j;
 	
 	@Autowired
+	private ContractRepository repository;
+	
+	@Autowired
+	private ContractRoomsInfoRepository contractRoomsInfoRepository;
+	
+	@Autowired
 	private RepresentativeService reprService;
 	
+	@Autowired
+	private HotelService hotelService;
 	
+	@Autowired
+	private AgencyRepository agRepo;
 	
+	@Autowired
+	private AccomodationRepository accRepo;
 	
 	@SuppressWarnings("deprecation")
 	public String deployAllotment(ContractCTO contract) {
@@ -75,13 +96,40 @@ public class ContractService {
 					).send();
 		} catch (Exception e) {
 			e.printStackTrace();
+			return "Deploy failed";
 		}
 		
 		Contract dbContract = new Contract();
 		dbContract.setAddress(deployedContract.getContractAddress());
 		dbContract.setStatus("NEG");
-		dbContract.setAgency(null);
-		dbContract.setOrg(null);
+		
+		dbContract.setStartDate(new Date(contract.getStartDate().longValue() * 1000));
+		dbContract.setEndDate(new Date(contract.getEndDate().longValue() * 1000));
+		
+		Agency ag = agRepo.findByAddress(contract.getAgencyRepr());
+		dbContract.setAgency(ag);
+		
+		Accomodation acc = accRepo.findByAccount(contract.getAccomodationRepr());
+		dbContract.setAccomodation(acc);
+		
+		dbContract = repository.save(dbContract);
+		System.out.println("Saved contract with ID = " + dbContract.getId());
+		
+		// Dodaj podatke o sobama u bazu
+		List<BigInteger> biRoomInfo = contract.getRoomsInfo();
+		for (int i=1; i<biRoomInfo.size(); ++i) {
+			int rooms = biRoomInfo.get(i).intValue();
+			if (rooms < 1) {
+				continue;
+			}
+			ContractRoomsInfo cri = new ContractRoomsInfo();
+			cri.setContract(dbContract);
+			cri.setBeds(i);
+			cri.setNoRooms(rooms);
+			cri = contractRoomsInfoRepository.save(cri);
+			System.out.println("Saved cri with ID = " +cri.getId());
+		}
+		
 		
 		EthFilter filter = new EthFilter( DefaultBlockParameterName.LATEST,
 			    DefaultBlockParameterName.LATEST, deployedContract.getContractAddress());
@@ -557,10 +605,10 @@ public class ContractService {
 				address, web3j, reprService.getCredentials(PLATFORM_ACCOUNT),
 		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
 
-		List<Long> hotels = new ArrayList<Long>();
+		List<BigInteger> hotels = new ArrayList<BigInteger>();
 		
 		try {
-			hotels = (List<Long>)contract.getHotels().send();
+			hotels = contract.getHotels().send();
 			msg = "Success";
 		} catch (Exception e) {
 			msg = "Failed";
@@ -568,9 +616,16 @@ public class ContractService {
 			return msg;
 			//e.printStackTrace();
 		}
+		
+		List<String> hotelNames = new ArrayList<String>();
+		for (BigInteger id : hotels) {
+			Hotel hotel = hotelService.findById(id.longValue());
+			hotelNames.add(hotel.getName());
+		}
+		
 		System.out.println("Returned: " + hotels);
 		
-		return hotels.toString();
+		return hotelNames.toString();
 	}
 
 	public String getCourtInfo(String address) {
@@ -622,10 +677,10 @@ public class ContractService {
 			//e.printStackTrace();
 		}
 		
-		List<RoomsInfo> ri = SCParser.parseAllRoomsInfo(bytes);
+		List<RoomsInfoDTO> ri = SCParser.parseAllRoomsInfo(bytes);
 	
 		String ret = "";
-		for (RoomsInfo r: ri) {
+		for (RoomsInfoDTO r: ri) {
 			ret += r + "\n";
 			System.out.println(r);
 		}
@@ -732,5 +787,64 @@ public class ContractService {
 		return withdrawals.toString();	
 	}
 
+
+	public List<Contract> findByAcc(Long acc_id) {
+		return repository.findByAccomodation_id(acc_id);
+	}
+	
+	public List<ContractRoomsInfo> findByContract_id(Long contract_id) {
+		return contractRoomsInfoRepository.findByContract_id(contract_id);
+	}
+	
+	private String returnErrorMessage(int code) {
+		
+		String msg = "Error occured";
+		
+		switch (code) {
+		case 1:
+			msg = "Not enough ether, please send more!";
+			break;
+
+		case 2:
+			msg = "Error code 2";
+			break;
+		case 3:
+			msg = "Error code 3";
+			break;
+		case 4:
+			msg = "Error code 4";
+			break;
+		default:
+			msg += " (code unknown)";
+			break;
+		}
+		
+		return msg;
+		
+	}
+
+	public String getinitialTransferValue(String address) {
+		String msg = "";
+		
+		@SuppressWarnings("deprecation")
+		Allotment contract = Allotment.load(
+				address, web3j, reprService.getCredentials(PLATFORM_ACCOUNT),
+		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
+		
+		
+		BigInteger bi = null;
+		try {
+			bi = contract.getInitialTransferValue().send();
+			msg = "Success";
+		} catch (Exception e) {
+			msg = "Failed";
+			System.out.println("Failed to withdraw!");
+			return msg;
+		}
+		
+		System.out.println("Should be transfered -> " + bi);
+		
+		return bi.toString();
+	}
 	
 }

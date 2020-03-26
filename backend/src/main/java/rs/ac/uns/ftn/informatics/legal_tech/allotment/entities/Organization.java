@@ -10,11 +10,11 @@ import javax.persistence.InheritanceType;
 import lombok.Data;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public @Data class Organization {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.TABLE)
 	protected Long id;
 	
 	protected String name;

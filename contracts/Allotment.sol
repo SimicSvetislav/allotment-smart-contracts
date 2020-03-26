@@ -21,6 +21,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         bool provision;
         bool mainSeason; // Nema konkretnu upotrebu, koristi se radi debagovanja
         uint kids;
+        uint agCommision;
         // bool verified; // Mozda se moze koristii polje provision
     }
     
@@ -310,6 +311,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         
         require(reservation.length % RESERVATION_PARSE_STEP == 0, 'Call parameters not properly sent');
         
+        uint commision = 0;
         for (uint i = 0; i < reservation.length; i = add(i, RESERVATION_PARSE_STEP)) {
             uint fromDate = reservation[i];
             uint toDate = reservation[add(i,1)];
@@ -374,11 +376,14 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
             
             require(kids <= mul(beds,noRooms), "Number of kids exceeds total number of beds");
             
-            // totalPrice += (beds*noRooms - kids)*pricePerBed + kids*_kidPrice;
+            //totalPrice += (beds*noRooms - kids)*pricePerBed + kids*_kidPrice;
             totalPrice = add(totalPrice, add(mul(sub(mul(beds,noRooms), kids), pricePerBed), mul(kids, _kidPrice)));
             
+            // commision += (beds*noRooms - kids) * pricePerBed * _commision / 100;
+            commision = add(commision, div(mul(mul(sub(mul(beds,noRooms), kids), pricePerBed), _commision), 100));  
+            
             _totalReservations = add(_totalReservations, 1);
-            Reservation memory newRes = Reservation(_totalReservations, fromDate, toDate, noRooms, totalPrice, priceType, false, mainSeason, kids);
+            Reservation memory newRes = Reservation(_totalReservations, fromDate, toDate, noRooms, totalPrice, priceType, false, mainSeason, kids, commision);
             _reservations[beds].push(newRes);
         }
     }
@@ -520,7 +525,17 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         
         for (uint i=0; i < _reservations[beds].length; i=add(i,1)) {
             if (id == _reservations[beds][i].id) {
-                uint256 compensation = div(mul(_reservations[beds][i].price, _commision), 100);
+                // Ne moze ovako, mora se uzeti u obzir broj krevera koje koriste deca
+                // Sav prihod od takvih kreveta pripada smestaju
+                // uint256 compensation = div(mul(_reservations[beds][i].price, _commision), 100);
+                uint256 compensation = sub(_reservations[beds][i].price, _reservations[beds][i].agCommision);
+                
+                if (compensation > address(this).balance) {
+                    _code = 1;
+                    revert("Can't pay compensation, balance too low");                    
+                }
+                
+                
                 _accomodationRepr.transfer(compensation);
                 _reservations[beds][i].provision = true;
             }
@@ -595,6 +610,28 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         }
         
         return occupied;
+    }
+    
+    function getInitialTransferValue()
+        public
+        view
+        returns (uint256 totalValue)
+    {
+        // +1 -> DA bi se uzeo u obzir i poslednji dan u intervalu
+        uint periodDays = diffDays(_startDate, _endDate) + 1;
+        uint mainSeasonDays = diffDays(_mainSeasonStart, _mainSeasonEnd) + 1;
+        
+        uint offSeasonDays = sub(periodDays, mainSeasonDays);
+        
+        // Ukupna inicijalna uplata
+        totalValue = _advancePayment + offSeasonDays * _totalBeds * _priceOS + mainSeasonDays * _totalBeds * _priceFB;
+        
+        uint256 offSeasonValue = mul(mul(_totalBeds, _priceOS), offSeasonDays);
+        uint256 mainSeasonValue = mul(mul(_totalBeds, _priceFB), mainSeasonDays);
+        
+        totalValue = add(add(offSeasonValue, mainSeasonValue), _advancePayment);
+        
+        return totalValue;
     }
     
     function contractBalance()
@@ -673,9 +710,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         			b[step*i+j+32*9+offset] = byte(uint8(ress[i].kids / (2 ** (8 * (31 - j)))));
     			}
             }
-            
             offset += step*ress.length;
-            
         }
     }
     
@@ -861,7 +896,6 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         view
         returns (bytes memory b)
     {
-        
         uint step = 32*2;
         
         b = new bytes(step * _bedOptions.length); 
@@ -884,6 +918,5 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
     {
         hotels = _hotels;
     }
-    
     
 }
