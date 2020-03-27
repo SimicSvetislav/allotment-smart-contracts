@@ -30,6 +30,7 @@ export class AppComponent implements OnInit/*, AfterViewInit*/ {
                 this.authService.isUserLoggedIn.subscribe( value => {
                   this.logged = value;
                   // get number of new proposals
+
                 });
               }
 

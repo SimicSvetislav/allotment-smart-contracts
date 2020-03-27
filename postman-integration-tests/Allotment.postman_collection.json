@@ -1,0 +1,1169 @@
+{
+	"info": {
+		"_postman_id": "90a5d487-0698-47f9-a11b-d54cb2ea6a65",
+		"name": "Allotment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Test",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcGVyYSIsImlhdCI6MTU4MjQ5NDcwOCwiZXhwIjoxNTgyNTgxMTA4fQ.nq5awMgEbNYrmu2MHrW7caqwcoEEZ5I4ggcrPuVB9R-4xWGVrEk9PFm85hj5_iPTjnvzn7jmMcL8jc1eZSccFQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create dummy representative",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Authenticate",
+			"request": {
+				"auth": {
+					"type": "bearer"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/auth/signin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Contract test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "set",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "set num",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/setNum/10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"setNum",
+						"10"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/get",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get num",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcGVyYSIsImlhdCI6MTU4NDI2MzAwMiwiZXhwIjoxNTg0MzQ5NDAyfQ.5x0gUEy12AwcCb7olKJxQpFW-P4Qg4qWfHFtsgHJ3FpjxnV_KDM3jrWJjf5qtfzw-wk8dVy_XpRoSaIjZftLFw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/getNum",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"getNum"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAR",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/getAgr/{{contract}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"getAgr",
+						"{{contract}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAcr",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/getAcr/0x11eccd64a00f8c0a1f81180ced0d538072138dbb",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"getAcr",
+						"0x11eccd64a00f8c0a1f81180ced0d538072138dbb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get hotels in contract",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/getAcr/0x11eccd64a00f8c0a1f81180ced0d538072138dbb",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"getAcr",
+						"0x11eccd64a00f8c0a1f81180ced0d538072138dbb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get court info",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/courtInfo/{{contract}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"courtInfo",
+						"{{contract}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get rooms info",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/courtInfo/{{contract}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"courtInfo",
+						"{{contract}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get initial transfer value",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/courtInfo/{{contract}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"courtInfo",
+						"{{contract}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get contract info",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/courtInfo/{{contract}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"courtInfo",
+						"{{contract}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "inc",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcGVyYSIsImlhdCI6MTU4NDI2MzAwMiwiZXhwIjoxNTg0MzQ5NDAyfQ.5x0gUEy12AwcCb7olKJxQpFW-P4Qg4qWfHFtsgHJ3FpjxnV_KDM3jrWJjf5qtfzw-wk8dVy_XpRoSaIjZftLFw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/getNum",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"getNum"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deploy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deploy allotment",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deploy allotment body",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"agencyRepr\": \"{{agRepr}}\",\n\t\"accomodationRepr\": \"{{accRepr}}\",\n\t\"startDate\": 1612217072,\n\t\"endDate\": 1638309872,\n\t\"hotels\": [1,2,3],\n\t\"prices\": [15, 25, 12, 10],\n\t\"someContrains\": [8, 20, 30, 50, 1622548800, 1630411200],\n\t\"roomsInfo\": [20, 3, 4, 3, 0, 0],\n\t\"periods\": [10, 7],\n\t\"clause\": false,\n\t\"advancePayment\": 20,\n\t\"commision\": 5,\n\t\"finePerBed\": 7,\n\t\"courtName\": \"Osnovni sud\",\n\t\"courtLocation\": \"Novi Sad\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/deployA",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"deployA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delegate acc",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcGVyYSIsImlhdCI6MTU4NDM4NzI3MywiZXhwIjoxNTg0NDczNjczfQ.O0Xoq_aJQ1L6_hp5tT_v3qRlRdZOOqY4g2sURht_ht3P6RNx5xZA6IH5fvyn5c6laJN8U3q4Iv7tqxpO6ubpUg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"0xa31ac6c2a0d47a7f6950526ea1bdd43064b53027\",\n\t\"userAddress\": \"0xEf72890112a09aAcF3c7ddf7A19426aAA5A2905E\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/delegateAcc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"delegateAcc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delegate ag",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcGVyYSIsImlhdCI6MTU4NDM4NzI3MywiZXhwIjoxNTg0NDczNjczfQ.O0Xoq_aJQ1L6_hp5tT_v3qRlRdZOOqY4g2sURht_ht3P6RNx5xZA6IH5fvyn5c6laJN8U3q4Iv7tqxpO6ubpUg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"0xa31ac6c2a0d47a7f6950526ea1bdd43064b53027\",\n\t\"userAddress\": \"0x31AC09A318c529AFC7CA59400f346333C75C0019\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/delegateAg",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"delegateAg"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "acc agree",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"{{contract}}\",\n\t\"userAddress\": \"{{accRepr}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/accAgreed/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"accAgreed",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ag agree",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcGVyYSIsImlhdCI6MTU4NDUyNDMxNiwiZXhwIjoxNTg0NjEwNzE2fQ.6-pEpJ7DyC8LnT5hJXZkmDJNAfwJQJPvpQZGJMlaCJc9P6xxQ6yuGbZezrbYN4pWUQ7PC0AI8jhI0SLhJ_f2MA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"0x11eccd64a00f8c0a1f81180ced0d538072138dbb\",\n\t\"userAddress\": \"0x561bb571e927ff9de50bd60b036224460f59bfd7\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/agAgreed/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"agAgreed",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "balance ether",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcGVyYSIsImlhdCI6MTU4NDUyNDMxNiwiZXhwIjoxNTg0NjEwNzE2fQ.6-pEpJ7DyC8LnT5hJXZkmDJNAfwJQJPvpQZGJMlaCJc9P6xxQ6yuGbZezrbYN4pWUQ7PC0AI8jhI0SLhJ_f2MA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"0x889F3F5a2306d95b9b72640BCfD1a1A7436aA629\",\n\t\"userAddress\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/balance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "balance user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcGVyYSIsImlhdCI6MTU4NDUyNDMxNiwiZXhwIjoxNTg0NjEwNzE2fQ.6-pEpJ7DyC8LnT5hJXZkmDJNAfwJQJPvpQZGJMlaCJc9P6xxQ6yuGbZezrbYN4pWUQ7PC0AI8jhI0SLhJ_f2MA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"0x889F3F5a2306d95b9b72640BCfD1a1A7436aA629\",\n\t\"userAddress\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/balance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "balances all",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcGVyYSIsImlhdCI6MTU4NDUyNDMxNiwiZXhwIjoxNTg0NjEwNzE2fQ.6-pEpJ7DyC8LnT5hJXZkmDJNAfwJQJPvpQZGJMlaCJc9P6xxQ6yuGbZezrbYN4pWUQ7PC0AI8jhI0SLhJ_f2MA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"0x889F3F5a2306d95b9b72640BCfD1a1A7436aA629\",\n\t\"userAddress\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/balance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "balances all wei",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcGVyYSIsImlhdCI6MTU4NDUyNDMxNiwiZXhwIjoxNTg0NjEwNzE2fQ.6-pEpJ7DyC8LnT5hJXZkmDJNAfwJQJPvpQZGJMlaCJc9P6xxQ6yuGbZezrbYN4pWUQ7PC0AI8jhI0SLhJ_f2MA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/balancesWei",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"balancesWei"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "balance wei",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcGVyYSIsImlhdCI6MTU4NDUyNDMxNiwiZXhwIjoxNTg0NjEwNzE2fQ.6-pEpJ7DyC8LnT5hJXZkmDJNAfwJQJPvpQZGJMlaCJc9P6xxQ6yuGbZezrbYN4pWUQ7PC0AI8jhI0SLhJ_f2MA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"0x889F3F5a2306d95b9b72640BCfD1a1A7436aA629\",\n\t\"userAddress\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/balance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"from\": \"0x561bB571E927FF9de50bD60b036224460F59bFD7\",\n\t\"to\": \"0xa9eC69bC066fAa5cc43f0A78c856263Dc204928C\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/transfer/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"transfer",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer one to acc",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"from\": \"0x561bB571E927FF9de50bD60b036224460F59bFD7\",\n\t\"to\": \"0xa9eC69bC066fAa5cc43f0A78c856263Dc204928C\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/transfer/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"transfer",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get ress",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"{{contract}}\",\n\t\"userAddress\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/ress/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"ress",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get ress all",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"{{contract}}\",\n\t\"userAddress\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/ress/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"ress",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get withdrawals",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"{{contract}}\",\n\t\"userAddress\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/ress/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"ress",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reserve",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"from\": 1630324800000,\n\t\"to\": 1631275200000,\n\t\"beds\": 5,\n\t\"noRooms\": 1,\n\t\"priceType\": 1,\n\t\"kids\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/reserve/1/{{contract}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"reserve",
+						"1",
+						"{{contract}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "withdraw",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"from\": 1591358166000,\n\t\"to\": 1592222166000,\n\t\"beds\": 3,\n\t\"noRooms\": 3,\n\t\"priceType\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/reserve/1/{{contract}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"reserve",
+						"1",
+						"{{contract}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "breakAg",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"contractAddress\": \"{{contract}}\",\n\t\"userAddress\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/web3j/breakAg/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"web3j",
+						"breakAg",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get repr",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
