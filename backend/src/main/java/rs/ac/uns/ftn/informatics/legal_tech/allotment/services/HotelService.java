@@ -33,4 +33,8 @@ public class HotelService {
 		
 	}
 	
+	public List<Hotel> findHotelsByAcc(Long id) {
+		return repo.findByOrg_id(id);
+	}
+	
 }

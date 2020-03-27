@@ -4,45 +4,27 @@ import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 
-public class JwtResponse {
+import lombok.Data;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.RepresentativeDTO;
+
+public @Data class JwtResponse {
     private String token;
     private String type = "Bearer";
     private String displayName;
 	private Collection<? extends GrantedAuthority> authorities;
 	//private Integer idCompany;
-	private Long id;
+	// private Long id;
+	private RepresentativeDTO reprDto;
 
-	public JwtResponse(String accessToken, String displayName, Collection<? extends GrantedAuthority> authorities, Long id) {
+	public JwtResponse(String accessToken, String displayName, Collection<? extends GrantedAuthority> authorities, RepresentativeDTO reprDto) {
 		this.token = accessToken;
 		this.displayName = displayName;
 		this.authorities = authorities;
 		//this.idCompany = id;
-		this.id = id;
+		// this.id = id;
+		this.reprDto = reprDto;
 	}
 	
-	
-
-    public Long getId() {
-		return id;
-	}
-
-
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-
-
-	/*public Integer getIdCompany() {
-		return idCompany;
-	}
-	public void setIdCompany(Integer idCompany) {
-		this.idCompany = idCompany;
-	}*/
-
-
-
 	public String getDisplayName() {
 		return displayName;
 	}

@@ -6,7 +6,7 @@ export class Representative {
     fullName: string;
     phoneNumber: string;
 
-    type: number; // 1 - agency; 2 - accomodation
+    type: string; // 1 - agency; 2 - accomodation
     orgName: string;
     orgAccount: string;
     orgAddress: string;

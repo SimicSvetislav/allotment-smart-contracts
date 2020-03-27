@@ -1,3 +1,4 @@
+import { Representative } from './../../Representative';
 import { API } from './../../globals';
 import { Router } from '@angular/router';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -19,13 +20,14 @@ export class AuthService {
 
   constructor(private router: Router, private http: HttpClient) { }
 
-  public setToken(token: JwtResponse) {
-    localStorage.setItem('token', JSON.stringify(token));
+  public setToken(token: string) {
+    localStorage.setItem('token', token);
   }
 
   public getToken(): string {
-    const storedData: JwtResponse = JSON.parse(localStorage.getItem('token'));
-    return storedData != null ? storedData.accessToken : null;
+    const storedData = localStorage.getItem('token');
+    return storedData;
+    // return storedData != null ? storedData.accessToken : null;
   }
 
   public deleteToken() {
@@ -84,13 +86,13 @@ export class AuthService {
     return at != null ? at : 'Profile';
   }
 
-  public saveUser(user: number) {
+  public saveUser(user: Representative) {
     window.sessionStorage.removeItem(USER_KEY);
     window.sessionStorage.setItem(USER_KEY, JSON.stringify(user));
   }
 
-  public getUser(): string {
-    return sessionStorage.getItem(USER_KEY);
+  public getUser(): Representative {
+    return JSON.parse(sessionStorage.getItem(USER_KEY));
   }
 
 }

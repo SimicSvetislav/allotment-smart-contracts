@@ -1,3 +1,4 @@
+import { AuthService } from './../services/auth/auth.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ContractsComponent implements OnInit {
 
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
+
+    this.authService.checkLoggedIn();
+    this.authService.isUserLoggedIn.next(true);
+
+    this.authService.setActiveTab('Profile');
+
   }
 
 }

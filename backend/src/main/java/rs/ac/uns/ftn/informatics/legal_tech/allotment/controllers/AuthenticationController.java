@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.RepresentativeDTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Representative;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.security.JwtProvider;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.security.JwtResponse;
@@ -71,8 +72,9 @@ public class AuthenticationController {
         String jwt = jwtProvider.generateJwtToken(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         
-            
-        return new ResponseEntity<JwtResponse>(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities(), repr.getId()), HttpStatus.OK);
+        RepresentativeDTO dto = new RepresentativeDTO(repr);    
+        
+        return new ResponseEntity<JwtResponse>(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities(), dto), HttpStatus.OK);
     	      
        
     }
@@ -103,10 +105,9 @@ public class AuthenticationController {
         String jwt = jwtProvider.generateJwtToken(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         
-            
-        return new ResponseEntity<JwtResponse>(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities(), repr.getId()), HttpStatus.OK);
-    	      
-       
+        RepresentativeDTO dto = new RepresentativeDTO(repr);    
+        
+        return new ResponseEntity<JwtResponse>(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities(), dto), HttpStatus.OK);  
     }
     
     @RequestMapping(method = RequestMethod.GET, path = "signup", produces = "application/json")

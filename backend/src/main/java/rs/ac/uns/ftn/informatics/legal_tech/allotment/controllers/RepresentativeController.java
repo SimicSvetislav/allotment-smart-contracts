@@ -31,29 +31,9 @@ public class RepresentativeController {
 	@GetMapping(path="/{id}")
 	public ResponseEntity<RepresentativeDTO> getRepresentative(@PathVariable("id") Long id) {
 		
-		RepresentativeDTO dto = new RepresentativeDTO();
-		dto.setId(id);
-		
 		Representative repr = service.getById(id);
 		
-		dto.setDisplayName(repr.getDisplayName());
-		dto.setEmail(repr.getEmail());
-		dto.setFullName(repr.getFullName());
-		dto.setPhoneNumber(repr.getPhoneNumber());
-		
-		Organization org = repr.getRepresenting();
-		
-		dto.setOrgAccount(org.getAccount());
-		dto.setOrgAddress(org.getAddress());
-		dto.setOrgCity(org.getCity());
-		dto.setOrgCountry(org.getCountry());
-		dto.setOrgName(org.getName());
-		
-		if (org instanceof Agency) {
-			dto.setType(1);
-		} else {
-			dto.setType(2);
-		}
+		RepresentativeDTO dto = new RepresentativeDTO(repr);
 		
 		return new ResponseEntity<RepresentativeDTO>(dto, HttpStatus.OK);
 	}

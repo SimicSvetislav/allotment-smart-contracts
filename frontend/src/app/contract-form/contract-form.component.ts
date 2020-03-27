@@ -31,10 +31,10 @@ export class ContractFormComponent implements OnInit {
   test2() {
     // alert('TEST');
 
-    this.testService.testLogIn().subscribe(data => {
+    this.testService.testLogIn().subscribe((data: JwtResponse) => {
 
       try {
-        this.authService.setToken(data as JwtResponse);
+        this.authService.setToken(data.accessToken);
       } catch {
         console.error('Token not in valid format');
       }

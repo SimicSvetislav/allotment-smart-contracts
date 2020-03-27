@@ -1,4 +1,4 @@
-import { RepresentativeService } from './../services/representative.service';
+import { RepresentativeService } from '../services/representative.service';
 import { Representative } from './../Representative';
 import { EventBrokerService } from './../services/events/event-broker.service';
 import { AuthService } from './../services/auth/auth.service';
@@ -15,21 +15,22 @@ export class ProfileComponent implements OnInit {
   isCollapsedOrgInfo = false;
 
   repr = new Representative();
-  asd = 'dasdas';
 
-  constructor(private authService: AuthService, 
-              private eventBroker: EventBrokerService,
-              private reprService: RepresentativeService) { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
       this.authService.checkLoggedIn();
       this.authService.isUserLoggedIn.next(true);
 
-      this.reprService.getRepr(this.authService.getUser()).subscribe(data =>{
+      this.repr = this.authService.getUser();
+
+      this.authService.setActiveTab('Profile');
+
+      /*this.reprService.getRepr(this.authService.getUser()).subscribe(data =>{
         this.repr = data;
       }, error => {
         console.log(error);
-      });
+      });*/
 
   }
 

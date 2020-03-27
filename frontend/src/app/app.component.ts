@@ -16,7 +16,8 @@ export class AppComponent implements OnInit/*, AfterViewInit*/ {
 
   logged = false;
   activeTab: string;
-  id;
+
+  newProposals = 0;
 
   private myEventListener: IEventListener;
 
@@ -28,6 +29,7 @@ export class AppComponent implements OnInit/*, AfterViewInit*/ {
                 });*/
                 this.authService.isUserLoggedIn.subscribe( value => {
                   this.logged = value;
+                  // get number of new proposals
                 });
               }
 

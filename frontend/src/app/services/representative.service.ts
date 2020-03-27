@@ -1,6 +1,6 @@
-import { REPR_API } from './../globals';
+import { REPR_API } from '../globals';
 import { HttpClient } from '@angular/common/http';
-import { Representative } from './../Representative';
+import { Representative } from '../Representative';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 

@@ -1,0 +1,249 @@
+<header class="header" >
+    <div class="header-inner container">
+        <h2><p class='text-center'>New contract proposal</p></h2>
+    </div>
+</header>
+<div id="proposalForm" class='container offset-md-1 col-md-10'>
+    <form>
+        <div class="form-row">
+            <div class="form-group col md-6">  
+                <label for="dp1">Start date</label>
+                <div class="input-group">
+                    <input class="form-control" placeholder="Choose start date..."
+                            name="dp1" id="dp1" [(ngModel)]="startDate" ngbDatepicker #d1="ngbDatepicker">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" (click)="d1.toggle()" type="button">
+                            <i class="far fa-calendar-alt"></i>
+                        </button>
+                    </div> 
+                </div>
+            </div>
+            <div class="form-group col md-6">
+                <label for="dp2">End date</label>
+                <div class="input-group">
+                    <input class="form-control" placeholder="Choose end date..."
+                            name="dp2" id="dp2" [(ngModel)]="endDate" ngbDatepicker #d2="ngbDatepicker">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" (click)="d2.toggle()" type="button">
+                            <i class="far fa-calendar-alt"></i>
+                        </button>
+                    </div> 
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="form-row">
+            <div class="form-group col md-6">  
+                <label for="dp3">Main season start date</label>
+                <div class="input-group">
+                    <input class="form-control" placeholder="Choose start date..."
+                            name="dp3" id="dp3" [(ngModel)]="mainStartDate" ngbDatepicker #d3="ngbDatepicker">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" (click)="d3.toggle()" type="button">
+                            <i class="far fa-calendar-alt"></i>
+                        </button>
+                    </div> 
+                </div>
+            </div>
+            <div class="form-group col md-6">
+                <label for="dp4">Main season end date</label>
+                <div class="input-group">
+                    <input class="form-control" placeholder="Choose end date..."
+                            name="dp4" [(ngModel)]="mainEndDate" ngbDatepicker #d4="ngbDatepicker">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" (click)="d4.toggle()" type="button">
+                            <i class="far fa-calendar-alt"></i>
+                        </button>
+                    </div> 
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class='form-row'>
+            <div class="form-group col-md-6">
+                <label for="orgComboBox">Other organization</label>
+                <select #t (change)="onOrgChange(t)" id='orgComboBox' class="browser-default custom-select">
+                    <option selected="" disabled>Choose other organization...</option>
+                    <option *ngFor="let org of organizations" [ngValue]="org.id">
+                        {{org.name}}
+                    </option>
+                </select>
+            </div>
+            <div *ngIf="statusDropdownList" class="form-group col-md-6">
+                <label for="hotelsMultiComboBox">Accomodations</label>
+                <ng-multiselect-dropdown
+                    id="hotelsMultiComboBox"
+                    name="hotelsMultiComboBoxName"
+                    [placeholder]="'Choose hotels...'"
+                    [data]="hotels"
+                    [(ngModel)]="selectedHotels"
+                    [settings]="dropdownSettings"
+                    (onSelect)="onItemSelect($event)"
+                    (onSelectAll)="onSelectAll($event)"
+                    >
+                </ng-multiselect-dropdown>
+            </div>
+        </div>
+        <div class='form-row roomsInfoSection'>
+            <div class="form-group col-md-6">
+                <label for="numOfRooms">Select rooms</label>
+                <div class='form-row'>
+                    <div class="form-group col-md-8">
+                        <input type="number" class="form-control" multiple="1.0" step="1" min=1 [(ngModel)]="ri.noRooms" name="numOfRooms" placeholder="Enter number of rooms..."> 
+                    </div>
+                </div>
+                <label for="numOfRooms">with</label>
+                <div class='form-row'>
+                    <div class="form-group col-md-8">
+                        <input multiple="1.0" step="1" min=1 class="form-control" type="number" [(ngModel)]="ri.beds" name="numOfBeds" placeholder="Enter number of beds...">
+                    </div>
+                </div>
+                <div class='form-row'>
+                    <div class="form-group col-md-8">
+                        <button class="btn rounded-btn float-right" (click)="addRI()" type="button">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class='form-group col-md-6'>
+                <div class='form-row' *ngIf="roomsInfo.length > 0">
+                    <div class="form-group col-md-4">
+                        <label for="selectRI">Number of rooms</label>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="selectRI">Beds</label>
+                    </div>
+                    <div class="form-group col-md-4 text-right">
+                        <label for="selectRI">Remove</label>
+                    </div>
+                </div>
+                <div class='form-row' *ngFor="let rinfo of roomsInfo">
+                    <div class="form-group col-md-4">
+                        <ul class="list-group list-group-flush" >
+                            <li class="list-group-item">{{rinfo.noRooms}}</li>
+                        </ul>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">{{rinfo.beds}}</li>
+                        </ul>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <button class="btn rounded-remove-btn rounded-btn float-right" (click)="removeRoomsInfo(rinfo)" type="button">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                    <hr />
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class='form-row'>
+            <div class="form-group col-md-3">
+                <label for="priceHB">Half-board price</label>
+                <div class="input-group">
+                    <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.prices[0]' type="number" class="form-control" name="priceHB" id="priceHB" placeholder="Enter price in weis...">
+                    <div class="input-group-append">
+                        <span class="input-group-text wei-append" id="inputGroupAppend1">wei</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="priceFB">Full-board price</label>
+                <div class="input-group">
+                    <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.prices[1]' type="number" class="form-control" name="priceFB" id="priceFB" placeholder="Enter price in weis...">
+                    <div class="input-group-append">
+                        <span class="input-group-text wei-append" id="inputGroupAppend2">wei</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="priceOS">Offseason price</label>
+                <div class="input-group">
+                    <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.prices[2]' type="number" class="form-control" name="priceOS" id="priceOS" placeholder="Enter price in weis...">
+                    <div class="input-group-append">
+                        <span class="input-group-text wei-append" id="inputGroupAppend3">wei</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="priceKids">Kids price</label>
+                <div class="input-group">
+                    <input multiple="1.0" step="1" min=0 [(ngModel)]='contract.prices[3]' type="number" class="form-control" name="priceKids" id="priceKids" placeholder="Enter price in weis...">
+                    <div class="input-group-append">
+                        <span class="input-group-text wei-append" id="inputGroupAppend4">wei</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="psThresh">Preseason threshold</label>
+                <input multiple="1.0" step="1" min=0 [(ngModel)]='contract.someContrains[2]' type="number" class="form-control" name="psThresh" id="psThresh" placeholder="Enter percentage...">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="badPsPenalty">Bad preseason penalty</label>
+                <input multiple="1.0" step="1" min=0 [(ngModel)]='contract.someContrains[3]' type="number" class="form-control" name="badPsPenalty" id="badPsPenalty" placeholder="Enter percentage...">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="infPeriod">Informing period</label>
+                <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.periods[0]' type="number" class="form-control" name="infPeriod" id="infPeriod" placeholder="Enter number of days...">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="withPeriod">Withdrawal period</label>
+                <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.periods[1]' type="number" class="form-control" name="withPeriod" id="withPeriod" placeholder="Enter number of days...">
+            </div>
+        </div>
+        <br />
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="advancePayment">Advance payment</label>
+                <div class="input-group">
+                    <input multiple="1.0" step="1" min=0 [(ngModel)]='contract.advancePayment' type="number" class="form-control" name="advancePayment" id="advancePayment" placeholder="Enter value in weis..">
+                    <div class="input-group-append">
+                        <span class="input-group-text wei-append" id="inputGroupAppend5">wei</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="commision">Commision</label>
+                <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.commision' type="number" class="form-control" name="commision" id="commision" placeholder="Enter percentage...">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="fine">Fine per bed</label>
+                <div class="input-group">
+                    <input multiple="1.0" step="1" min=0 [(ngModel)]='contract.finePerBed' type="number" class="form-control" name="fine" id="fine" placeholder="Enter value in weis...">
+                    <div class="input-group-append">
+                        <span class="input-group-text wei-append" id="inputGroupAppend6">wei</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="courtName">Court name</label>
+                <input [(ngModel)]='contract.courtName' type="text" class="form-control" name="courtName" id="courtName" placeholder="Enter court name...">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="courtLocation">Court location</label>
+                <input [(ngModel)]='contract.courtLocation' type="text" class="form-control" name="courtLocation" id="courtLocation" placeholder="Enter court location...">
+            </div>
+        </div>
+        <br />
+        <div class="form-group row">
+            <div class="col-sm-2">Clause</div>
+            <div class="col-sm-2">
+                <div class="custom-control custom-checkbox">
+                    <input name="clause" [(ngModel)]="contract.clause" class="custom-control-input" type="checkbox" id="clause">
+                    <label class="custom-control-label" for="clause"></label>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="wrapper">
+    <button type="submit" class="btn rounded-btn mb-5" (click)="submit()">Submit</button>
+</div>

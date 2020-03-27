@@ -17,10 +17,10 @@
           <a class="nav-link" href="#" (click)="navigate('Contracts', '/contracts')">Contracts </a>
         </li>
         <li class="nav-item" [ngClass]="activeTab=='Proposals' ? 'active' : 'inactive'">
-          <a class="nav-link" href="#" (click)="navigate('Proposals', '/proposals')">Proposals </a>
+          <a class="nav-link" href="#" (click)="navigate('Proposals', '/proposals')">Proposals <span *ngIf="newProposals > 0" class="badge badge-danger">{{newProposals}}</span></a>
         </li>
         <li class="nav-item" [ngClass]="activeTab=='Propose' ? 'active' : 'inactive'">
-          <a class="nav-link" href="#" (click)="navigate('Propose', '/sc-form')">Propose </a>
+          <a class="nav-link" href="#" (click)="navigate('Propose', '/propose')">Propose </a>
         </li>
       </ul>
   

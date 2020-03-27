@@ -44,9 +44,9 @@ export class LoginComponent implements OnInit {
         alert('Nesto nije u redu!');
       } else {
 
-        this.authService.setToken(data as JwtResponse);
+        this.authService.setToken(data.accessToken);
         this.authService.isUserLoggedIn.next(true);
-        this.authService.saveUser(data.id);
+        this.authService.saveUser(data.reprDto);
 
         this.isLoginFailed = false;
         this.isLoggedIn = true;

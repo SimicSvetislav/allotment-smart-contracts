@@ -1,4 +1,5 @@
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ProposeComponent } from './propose/propose.component';
+import { NgbModule, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { EventBrokerService } from './services/events/event-broker.service';
 import { JwtInterceptor } from './jwt.interceptor';
 import { TokenInterceptor } from './token.interceptor';
@@ -9,6 +10,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,6 +28,7 @@ const appRoutes: Routes = [
   { path: 'proposals', component: ProposalsComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'contracts', component: ContractsComponent },
+  { path: 'propose', component: ProposeComponent },
   { path: '**', component: NotFoundComponent }
 ];
 
@@ -37,7 +40,8 @@ const appRoutes: Routes = [
     ProposalsComponent,
     ProfileComponent,
     NotFoundComponent,
-    ContractsComponent
+    ContractsComponent,
+    ProposeComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,6 +59,8 @@ const appRoutes: Routes = [
     HttpClientModule,
     BrowserAnimationsModule,
     NgbModule,
+    NgbDatepickerModule,
+    NgMultiSelectDropDownModule.forRoot(),
   ],
   providers: [
     {
