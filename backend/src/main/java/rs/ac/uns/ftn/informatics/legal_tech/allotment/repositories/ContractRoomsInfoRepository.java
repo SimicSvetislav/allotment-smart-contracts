@@ -11,5 +11,7 @@ import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.ContractRoomsInfo
 public interface ContractRoomsInfoRepository extends JpaRepository<ContractRoomsInfo, Long> {
 
 	public List<ContractRoomsInfo> findByContract_id(Long contract_id);
+
+	public void deleteByContract_id(Long contract_id);
 	
 }

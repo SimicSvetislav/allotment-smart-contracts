@@ -17,20 +17,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ContractCTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ReservationCTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.ContractAddressPair;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.DateRange;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.ReservationDTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.TransferPair;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Accomodation;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Agency;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Contract;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.ContractRoomsInfo;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Hotel;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Organization;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Representative;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.RoomsInfo;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.repositories.AccomodationRepository;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.repositories.AgencyRepository;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.services.ContractService;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.services.HotelService;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.services.RepresentativeService;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -44,10 +51,13 @@ public class ContractsController {
 	private HotelService hotelService;
 	
 	@Autowired
-	private ContractService contracService;
+	private AccomodationRepository accRepo;
 	
 	@Autowired
-	private AccomodationRepository accRepo;
+	private AgencyRepository agRepo;
+	
+	@Autowired
+	private RepresentativeService reprService;
 	
 	@GetMapping(path="/deployA")
 	public ResponseEntity<String> deployA() {
@@ -76,6 +86,7 @@ public class ContractsController {
 		
 	}
 	
+	/*
 	@PostMapping(path="/delegateAg/(userId)")
 	public ResponseEntity<String> delegateAgency(
 			@RequestBody ContractAddressPair pair,
@@ -87,7 +98,6 @@ public class ContractsController {
 		
 	}
 	
-	
 	@PostMapping(path="/delegateAcc/{userId}")
 	public ResponseEntity<String> delegateAcc(
 			@RequestBody ContractAddressPair pair,
@@ -97,7 +107,7 @@ public class ContractsController {
 		
 		return new ResponseEntity<String>(msg, HttpStatus.OK);
 		
-	}
+	}*/
 	
 	@PostMapping(path="/agAgreed/{userId}")
 	public ResponseEntity<String> agencyAgreed(
@@ -185,6 +195,7 @@ public class ContractsController {
 		
 	}
 	
+	/*
 	@PostMapping(path="/ress/{beds}")
 	public ResponseEntity<String> getRess(@RequestBody ContractAddressPair pair, @PathVariable("beds") Integer beds) {
 		
@@ -194,7 +205,7 @@ public class ContractsController {
 		
 		return new ResponseEntity<String>(retVal, HttpStatus.OK);
 		
-	}
+	}*/
 	
 	@PostMapping(path="/ressAll")
 	public ResponseEntity<String> getRessAll(@RequestBody ContractAddressPair pair) {
@@ -207,6 +218,14 @@ public class ContractsController {
 		
 	}
 	
+	@GetMapping(path="/reservations/{contractId}")
+	public ResponseEntity<List<ReservationDTO>> getAllReservations(@PathVariable("contractId") Long contractId) {
+		
+		List<ReservationDTO> reservationsList = service.getAllReservations(contractId);
+		
+		return new ResponseEntity<List<ReservationDTO>>(reservationsList, HttpStatus.OK);   	
+	}
+	
 	@PostMapping(path="/reserve/{repr}/{address}")
 	public ResponseEntity<String> reserve(
 			@RequestBody ReservationCTO res, 
@@ -217,6 +236,20 @@ public class ContractsController {
 		String retVal = service.reserve(address, repr, res);
 
 		
+		return new ResponseEntity<String>(retVal, HttpStatus.OK);
+		
+	}
+	
+	@PostMapping(path="/reservation/{cid}/{repr}")
+	public ResponseEntity<String> reserveFrontend(
+			@RequestBody ReservationCTO res, 
+			@PathVariable("cid") Long cid,
+			@PathVariable("repr") Long repr) {
+		
+		Contract c = service.findById(cid);
+		
+		String retVal = service.reserve(c.getAddress(), repr, res);
+
 		return new ResponseEntity<String>(retVal, HttpStatus.OK);
 		
 	}
@@ -258,19 +291,80 @@ public class ContractsController {
 		
 	}
 	
+	@GetMapping(path="/breakAg/{cid}/{repr}")
+	public ResponseEntity<String> breakAgencyFrontend(
+			@PathVariable("cid") Long cid,
+			@PathVariable("repr") Long repr) {
+		
+		Contract c = service.findById(cid);
+		
+		String retVal = service.breakAgency(c.getAddress(), repr);
+
+		return new ResponseEntity<String>(retVal, HttpStatus.OK);
+		
+	}
+	
+	@GetMapping(path="/breakAcc/{cid}/{repr}")
+	public ResponseEntity<String> breakAccomodationFrontend(
+			@PathVariable("cid") Long cid,
+			@PathVariable("repr") Long repr) {
+		
+		
+		Contract c = service.findById(cid);
+		
+		String retVal = service.breakAccomodation(c.getAddress(), repr);
+
+		
+		return new ResponseEntity<String>(retVal, HttpStatus.OK);
+		
+	}
+	
 	@PostMapping(path="/deployA")
 	public ResponseEntity<String> deployParameters(
 			@RequestBody ContractCTO contract) {
 		
 		
+		Long orgId = null; 
+		
+		// Proverava da li su navedeni predstavnici
+		// Predstavnik agencije
+		Long agrId = contract.getSomeContrains().get(0).longValue();
+		if (agrId != 0L) {
+			Representative repr = reprService.getById(agrId);
+			Organization org = repr.getRepresenting();
+			contract.setAgencyRepr(org.getAccount());
+		}
+		
+		// Predstavnik ugostitelja
+		Long accrId = contract.getSomeContrains().get(1).longValue();
+		if (contract.getSomeContrains().get(1).longValue() != 0L) {
+			Representative repr = reprService.getById(accrId);
+			Organization org = repr.getRepresenting();
+			orgId = org.getId();
+			contract.setAccomodationRepr(org.getAccount());
+		}
+		
+		// Proverava da li je naveden ID organizacije
+		Long agId = contract.getAgId();
+		if (agId != null && agId != 0) {
+			Agency ag = agRepo.findById(agId).get();
+			contract.setAgencyRepr(ag.getAccount());
+		}
+		
+		Long accId = contract.getAccId();
+		if (accId != null && accId != 0) {
+			Accomodation acc = accRepo.findById(accId).get();
+			orgId = acc.getId();
+			contract.setAccomodationRepr(acc.getAccount());
+		}
+		
 		// Proveriti da li hoteli pripadaju istoj organizaciji
 		List<BigInteger> hotels = contract.getHotels();
 		if (hotels.size() <= 0) {
-			return new ResponseEntity<String>("Hotels not listed", HttpStatus.BAD_REQUEST);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Hotels not listed");
+			// return new ResponseEntity<String>("Hotels not listed", HttpStatus.BAD_REQUEST);
 		}
 		
-		Long orgId = accRepo.findByAccount(contract.getAccomodationRepr()).getId();
-
 		// Raspolozivi kapacitet u hotelima
 		// kljuc - broj kreveta
 		// vredost - broj soba sa odredjenim brojem kreveta
@@ -281,7 +375,8 @@ public class ContractsController {
 			Hotel hotel = hotelService.findById(id.longValue());
 			Accomodation org = hotel.getOrg();
 			if (org.getId() != orgId) {
-				return new ResponseEntity<String>("Hotels do not belong to organization", HttpStatus.BAD_REQUEST);
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Hotels do not belong to organization");
+				// return new ResponseEntity<String>("Hotels do not belong to organization", HttpStatus.BAD_REQUEST);
 			}
 			
 			// Dodaj odgovarajuce kapacitete raspolozive u hotelu
@@ -294,7 +389,7 @@ public class ContractsController {
 		
 		// Belezenje smestaja koji je zauzet u zeljenom terminu
 		Map<Integer, Integer> occupied = new HashMap<Integer, Integer>();
-		List<Contract> deployedContracts = contracService.findByAcc(orgId);
+		List<Contract> deployedContracts = service.findByAccActive(orgId);
 		
 		for (Contract c : deployedContracts) {
 			
@@ -310,7 +405,7 @@ public class ContractsController {
 				  ctoStartDate.after(cEndDate) ||
 				  isSameDay(ctoStartDate, cEndDate)
 				)) {
-				List<ContractRoomsInfo> cris = contracService.findByContract_id(c.getId());
+				List<ContractRoomsInfo> cris = service.findRIByContract_id(c.getId());
 				for (ContractRoomsInfo cri : cris) {
 					occupied.put(cri.getBeds(), occupied.getOrDefault(cri.getBeds(), 0) + cri.getNoRooms());
 				}
@@ -330,8 +425,6 @@ public class ContractsController {
 		System.out.println("Occupied: " + occupied);
 		System.out.println("Looking for: " + lookingFor);
 		
-		// TODO Proveriti da li je dovoljno soba na raspolaganju
-		
 		// Preskace se prvi broj jer je to ukupan broj kreveta
 		for (Integer bedNum : lookingFor.keySet()) {
 			int demand = lookingFor.get(bedNum);
@@ -340,13 +433,18 @@ public class ContractsController {
 			int rented = occupied.getOrDefault(bedNum, 0);
 			
 			if (demand > totalCap - rented) {
-				return new ResponseEntity<String>("Rooms not available for rent!", HttpStatus.OK);
-			}
-			
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rooms not available for rent!");
+				// return new ResponseEntity<String>("Rooms not available for rent!", HttpStatus.BAD_REQUEST);
+			}	
 		}
 		
 		String retVal = service.deployAllotment(contract);
-
+		
+		if (contract.getSomeContrains().get(0).longValue() != 0) {
+			service.accAgreed(retVal, contract.getSomeContrains().get(0).longValue());
+		} else if (contract.getSomeContrains().get(1).longValue() != 0) {
+			service.agencyAgreed(retVal, contract.getSomeContrains().get(1).longValue());
+		}
 		
 		return new ResponseEntity<String>(retVal, HttpStatus.OK);
 		
@@ -388,11 +486,22 @@ public class ContractsController {
 	@GetMapping(path="/contractInfo/{contract}")
 	public ResponseEntity<String> getContractInfo(@PathVariable("contract") String address) {
 		
+		Contract c = service.findContractByAddress(address);
 		
-		String retVal = service.getContractInfo(address);
-
+		String retVal = service.getContractInfo(c).toString();
 		
 		return new ResponseEntity<String>(retVal, HttpStatus.OK);
+		
+	}
+	
+	@GetMapping(path="/contract/{id}")	
+	public ResponseEntity<ContractCTO> getFullContractInfoId(@PathVariable("id") Long id) {
+		
+		Contract c = service.findById(id);
+		
+		ContractCTO retVal = service.getContractInfo(c);;
+		
+		return new ResponseEntity<ContractCTO>(retVal, HttpStatus.OK);
 		
 	}
 	
@@ -406,6 +515,21 @@ public class ContractsController {
 		String retVal = service.withdraw(range, address, userId);
 
 		
+		return new ResponseEntity<String>(retVal, HttpStatus.OK);
+		
+	}
+	
+	@PostMapping(path="/withdrawal/{cid}/{repr}")
+	public ResponseEntity<String> withdrawFrontend (
+			@RequestBody DateRange range,
+			@PathVariable("cid") Long cid,
+			@PathVariable("repr") Long repr) {
+		
+		
+		Contract c = service.findById(cid);
+		
+		String retVal = service.withdraw(range, c.getAddress(), repr);
+
 		return new ResponseEntity<String>(retVal, HttpStatus.OK);
 		
 	}
@@ -430,6 +554,53 @@ public class ContractsController {
 		
 		return new ResponseEntity<String>(retVal, HttpStatus.OK);
 		
+	}
+	
+	@GetMapping(path="/contracts/{id}/{status}")
+	public ResponseEntity<List<ContractCTO>> getOrgContractsWithStatus(
+			@PathVariable("id") Long id,
+			@PathVariable("status") String status) {
+		
+		
+		// List<Contract> list = service.getContractsByOrg(id);
+		List<ContractCTO> list = service.getContractsByOrgAndStatus(id, status);
+		
+		return new ResponseEntity<List<ContractCTO>>(list, HttpStatus.OK);
+		
+	}
+	
+	@GetMapping(path="/accept/{contract}/{repr}")
+	public ResponseEntity<String> acceptProposal(
+			@PathVariable("contract") Long contract,
+			@PathVariable("repr") Long repr) {
+		
+		//Contract c = service.acceptProposal(contract, repr);
+		service.acceptProposal(contract, repr);
+		
+		return new ResponseEntity<String>("Contract successfully concluded", HttpStatus.OK);
+		
+	}
+	
+	@GetMapping(path="/reject/{contract}")
+	public ResponseEntity<String> rejectProposal(
+			@PathVariable("contract") Long contract) {
+		
+		String msg = service.rejectProposal(contract);
+		
+		return new ResponseEntity<String>(msg, HttpStatus.OK);
+		
+	}
+	
+	@GetMapping(path="/verify/{contractId}/{reservationId}/{beds}/{agencyReprentativeId}")
+	public ResponseEntity<String> verify(
+			@PathVariable("contractId") Long contractId,
+			@PathVariable("reservationId") Long reservationId,
+			@PathVariable("beds") Long beds,
+			@PathVariable("agencyReprentativeId") Long agencyReprentativeId) {
+		
+		String msg = service.verify(reservationId, contractId, beds, agencyReprentativeId);
+		
+		return new ResponseEntity<String>(msg, HttpStatus.OK);
 	}
 	
 	private boolean isSameDay(Date date1, Date date2) {

@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.RepresentativeDTO;
-import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Agency;
-import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Organization;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Representative;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.services.RepresentativeService;
 

@@ -55,7 +55,7 @@ public class RepresentativeService {
 		
 		Account account = null;
 		try {
-			account = accountsRepository.findByAccount(org.getAccount());
+			account = accountsRepository.findByAccount(org.getAccount()).get(0);
 		} catch (NoSuchElementException e) {
 			e.printStackTrace();
 			System.out.println("Can't get account");

@@ -7,13 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Accomodation;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Agency;
-import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Organization;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.services.OrganizationService;
 
 @RestController

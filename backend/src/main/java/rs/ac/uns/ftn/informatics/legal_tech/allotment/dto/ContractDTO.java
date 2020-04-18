@@ -13,8 +13,8 @@ public @Data class ContractDTO {
 	
 	private Long priceOS;
 	private Long kidPrice;
-	private Short kidAgeLimit;
-	private Short smallKidDiscount;
+	// private Short kidAgeLimit;
+	// private Short smallKidDiscount;
 	
 	private Short offSeasonMinimum;
 	private Short badOffseasonMaxPenalty;

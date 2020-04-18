@@ -1,6 +1,6 @@
 package rs.ac.uns.ftn.informatics.legal_tech.allotment.repositories;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -8,6 +8,6 @@ import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Account;
 
 public interface AccountsRepository extends JpaRepository<Account, Long> {
 
-	public Account findByAccount(String account);
+	public List<Account> findByAccount(String account);
 
 }

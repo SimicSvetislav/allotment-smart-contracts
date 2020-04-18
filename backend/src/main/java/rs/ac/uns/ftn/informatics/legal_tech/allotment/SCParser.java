@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.el.parser.ParseException;
 import org.bouncycastle.util.Arrays;
 
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ContractCTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.InfoEvent;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ReservationCTO;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.dto.ContractDTO;
@@ -107,11 +108,11 @@ public class SCParser {
 		
 		// Get kid age limit
 		bi = getNextRange(bytes, i++);
-		Short kidAgeLimit = bi.shortValue();
+		// Short kidAgeLimit = bi.shortValue();
 		
 		// Get discount gor small kids
 		bi = getNextRange(bytes, i++);
-		Short smallKidDiscount = bi.shortValue();
+		// Short smallKidDiscount = bi.shortValue();
 
 		
 		
@@ -182,8 +183,8 @@ public class SCParser {
 		
 		cInfo.setPriceOS(priceOS);
 		cInfo.setKidPrice(kidPrice);
-		cInfo.setKidAgeLimit(kidAgeLimit);
-		cInfo.setSmallKidDiscount(smallKidDiscount);
+		// cInfo.setKidAgeLimit(kidAgeLimit);
+		// cInfo.setSmallKidDiscount(smallKidDiscount);
 		
 		cInfo.setOffSeasonMinimum(offSeasonMinimum);
 		cInfo.setBadOffseasonMaxPenalty(badOffseasonMaxPenalty);
@@ -399,6 +400,125 @@ public class SCParser {
 		dateRange.setEndDate(endDate);
 		
 		return dateRange;
+	}
+
+	public static ContractCTO parseContractInfoCTO(byte[] bytes) throws ParseException {
+		ContractCTO cInfo = new ContractCTO();
+		
+		int size = bytes.length / CONTRACT_INFO_PARSE_STEP;
+		
+		if (size!=1) {
+			throw new ParseException("Length of byte array not valid");
+		}
+				
+		short i = 0;
+		
+		// Get start date
+		BigInteger bi = getNextRange(bytes, i++);
+		cInfo.setStartDate(BigInteger.valueOf(bi.longValue() * 1000));
+		
+		// Get end date
+		bi = getNextRange(bytes, i++);
+		cInfo.setEndDate(BigInteger.valueOf(bi.longValue() * 1000));
+		
+		List<BigInteger> prices = new ArrayList<BigInteger>();
+		
+		// Get half-board price
+		bi = getNextRange(bytes, i++);
+		prices.add(bi);
+		
+		// Get full-board price
+		bi = getNextRange(bytes, i++);
+		prices.add(bi);
+		
+		// Get offseason price
+		bi = getNextRange(bytes, i++);
+		prices.add(bi);
+		
+		// Get kid price
+		bi = getNextRange(bytes, i++);
+		prices.add(bi);
+		
+		cInfo.setPrices(prices);
+		
+		// Get kid age limit
+		bi = getNextRange(bytes, i++);
+	
+		// Get discount gor small kids
+		bi = getNextRange(bytes, i++);
+
+		
+		List<BigInteger> sc = new ArrayList<BigInteger>();
+		List<BigInteger> periods = new ArrayList<BigInteger>();
+		
+		
+		// Get minimum offseason occupation needed
+		bi = getNextRange(bytes, i++);
+		sc.add(bi);
+		
+		// Get penalty to agency for bad offseason
+		bi = getNextRange(bytes, i++);
+		sc.add(bi);
+		
+		// Get informing period
+		bi = getNextRange(bytes, i++);
+		periods.add(bi);
+		
+		// Get withdrawal period
+		bi = getNextRange(bytes, i++);
+		periods.add(bi);
+		
+		cInfo.setPeriods(periods);
+		
+		// Get if clause exists
+		bi = getNextRange(bytes, i++);
+		Boolean clause = bi.intValue() == 0 ? false : true;
+		
+		cInfo.setClause(clause);
+		
+		// Get advance payment
+		bi = getNextRange(bytes, i++);
+		cInfo.setAdvancePayment(bi);
+		
+		// Get commision
+		bi = getNextRange(bytes, i++);
+		cInfo.setCommision(bi);
+		
+		// Get fine per bed
+		bi = getNextRange(bytes, i++);
+		cInfo.setFinePerBed(bi);
+		
+		
+		// Get balance in wei
+		bi = getNextRange(bytes, i++);
+		cInfo.setBalance(bi);
+		// Long balance = bi.longValue();
+		
+		// Get when consent of wills is acquired
+		bi = getNextRange(bytes, i++);
+		cInfo.setAgreementDate(bi);
+		// Date aDate = bi.longValue() != 0 ? new Date(bi.longValue()*1000) : null;
+		
+		// Agent id
+		bi = getNextRange(bytes, i++);
+		sc.add(0, bi);
+		
+		// Accomodation representative id
+		bi = getNextRange(bytes, i++);
+		sc.add(1, bi);
+		
+		// Main season start
+		bi = getNextRange(bytes, i++);
+		sc.add(BigInteger.valueOf(bi.longValue() * 1000));
+		
+		// Main season end
+		bi = getNextRange(bytes, i++);
+		sc.add(BigInteger.valueOf(bi.longValue() * 1000));
+		
+		cInfo.setSomeContrains(sc);
+		
+		return cInfo;
+		
 	}
 	
 	

@@ -3,9 +3,6 @@ package rs.ac.uns.ftn.informatics.legal_tech.allotment;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Calendar;
-
-import javax.persistence.SequenceGenerator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -13,11 +10,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.tx.gas.DefaultGasProvider;
 
-import io.reactivex.disposables.Disposable;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Account;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Organization;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.services.AccountsService;
@@ -32,10 +26,7 @@ public class InitializationBean {
   @Autowired
   private OrganizationService orgService;
 
-  @Autowired
-  private Web3j web3j;
-  
-  @EventListener
+@EventListener
   public void onApplicationEvent(ContextRefreshedEvent event) {
       System.out.println("Initialization bean triggered");
 		BufferedReader reader = null;
@@ -87,6 +78,19 @@ public class InitializationBean {
 		});*/
 		
 		// System.out.println("Zone offset " + (Calendar.ZONE_OFFSET + Calendar.DST_OFFSET) / (60 * 1000));
+		
+		// TestLibrary lib = null;
+		
+		
+		/*try {
+			lib = TestLibrary.deploy(web3j, Credentials.create("0xcda666a871bb747df5c10f7fb1ba0091bfc70cfb74808f5db9cb28695cb775f4"), DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT
+					).sendAsync().get();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		System.out.println(lib.getContractAddress());*/
 		
   	}	
 }

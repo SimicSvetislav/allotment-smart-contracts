@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 import lombok.Data;
 
 @Entity
-public @Data class Contract {
+public @Data class Contract { 
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,9 @@ public @Data class Contract {
 	@ManyToOne
 	private Accomodation accomodation;
 	
-	@Column(columnDefinition = "boolean default false", nullable = false)
-	private Boolean seen;
+	// @Column(columnDefinition = "boolean default false", nullable = false)
+	// private Boolean seen;
 	
+	private Long agReprId;
+	private Long accReprId;
 }

@@ -19,6 +19,7 @@ public @Data class RepresentativeDTO {
 	private String orgAddress;
 	private String orgCity;
 	private String orgCountry;
+	private Long orgId;
 	
 	public RepresentativeDTO() {
 	}
@@ -38,6 +39,7 @@ public @Data class RepresentativeDTO {
 		this.setOrgCity(org.getCity());
 		this.setOrgCountry(org.getCountry());
 		this.setOrgName(org.getName());
+		this.setOrgId(org.getId());
 		
 		if (org instanceof Agency) {
 			this.setType("Agency");

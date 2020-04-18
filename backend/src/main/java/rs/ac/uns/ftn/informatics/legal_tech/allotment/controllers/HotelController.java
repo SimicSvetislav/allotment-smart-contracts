@@ -23,7 +23,7 @@ public class HotelController {
 	private HotelService service;
 	
 	@GetMapping(path="/{id}")
-	public ResponseEntity<List<Hotel>> getAgencies(@PathVariable("id") Long id) {
+	public ResponseEntity<List<Hotel>> getHotels(@PathVariable("id") Long id) {
 		
 		List<Hotel> hotels = service.findHotelsByAcc(id);
 		

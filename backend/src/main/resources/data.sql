@@ -31,6 +31,11 @@ INSERT INTO representative (display_name, email, full_name, password, phone_numb
 VALUES ("mmika", "mika@yahoo.com", "Miroslav Mikic", 
 		"$2a$10$TYEJ0OSTcthhSaYJccW2l.WvFEvtSehJ0njXf6OPXB7KW0pfh0/nW", 
 		"068/987-65-43", 2);
+		
+INSERT INTO representative (display_name, email, full_name, password, phone_number, representing_id)
+VALUES ("jova", "jova@gmail.com", "Jovan Jovanovic", 
+		"$2a$10$TYEJ0OSTcthhSaYJccW2l.WvFEvtSehJ0njXf6OPXB7KW0pfh0/nW", 
+		"068/987-65-43", 3);
 
 INSERT INTO hotel (address, city, country, name, org_id)
 VALUES ("Nikole Pašića 27", "Novi Sad", "Srbija", "Hotel Fontana", 2);
@@ -68,12 +73,16 @@ VALUE (2, 10, 3);
 INSERT INTO rooms_info(beds, no_rooms, hotel_id)
 VALUE (3, 5, 3);
 
+-- Park org
+
 INSERT INTO rooms_info(beds, no_rooms, hotel_id)
 VALUE (1, 5, 4);
 INSERT INTO rooms_info(beds, no_rooms, hotel_id)
 VALUE (2, 15, 4);
 INSERT INTO rooms_info(beds, no_rooms, hotel_id)
 VALUE (3, 5, 4);
+INSERT INTO rooms_info(beds, no_rooms, hotel_id)
+VALUE (4, 4, 4);
 
 INSERT INTO rooms_info(beds, no_rooms, hotel_id)
 VALUE (1, 5, 5);
@@ -81,6 +90,8 @@ INSERT INTO rooms_info(beds, no_rooms, hotel_id)
 VALUE (2, 15, 5);
 INSERT INTO rooms_info(beds, no_rooms, hotel_id)
 VALUE (3, 5, 5);
+INSERT INTO rooms_info(beds, no_rooms, hotel_id)
+VALUE (4, 4, 5);
 
 -- INSERT INTO room (beds, hotel_id)
 -- VALUES (3, 1);
@@ -91,3 +102,10 @@ VALUE (3, 5, 5);
 -- INSERT INTO room (beds, hotel_id)
 -- VALUES (2, 1);
 
+INSERT INTO contract (address, end_date, start_date, status, accomodation_id, agency_id, ag_repr_id, acc_repr_id)
+VALUE ("0x6bf8da2da6b5eaf4289919cec358c2065d93f92f", 
+	   "2020-03-21", "2020-04-21", "NEG", 3, 1, 1, 0);
+	   
+INSERT INTO contract (address, end_date, start_date, status, accomodation_id, agency_id, ag_repr_id, acc_repr_id)
+VALUE ("0x60aac89c241da220b409f2b037bfded720412479", 
+	   "2020-03-21", "2020-04-21", "NEG", 2, 1, 0, 2);

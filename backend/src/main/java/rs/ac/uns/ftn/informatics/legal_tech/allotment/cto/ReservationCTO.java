@@ -1,4 +1,4 @@
-package rs.ac.uns.ftn.informatics.legal_tech.allotment.cto;
+	package rs.ac.uns.ftn.informatics.legal_tech.allotment.cto;
 
 import java.sql.Timestamp;
 

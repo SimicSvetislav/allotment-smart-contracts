@@ -7,6 +7,8 @@ import lombok.Data;
 
 public @Data class ContractCTO {
 
+	private Long id;
+	
 	private String agencyRepr;
 	private String accomodationRepr;
 	private BigInteger startDate;
@@ -22,4 +24,14 @@ public @Data class ContractCTO {
 	private BigInteger finePerBed;
 	private String courtName;
 	private String courtLocation;
+	
+	private Long agId;
+	private Long accId;
+	private String agName;
+	private String accName;
+	
+	private List<String> hotelNames;
+	
+	public BigInteger agreementDate;
+	public BigInteger balance;
 }
