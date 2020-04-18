@@ -4,3 +4,7 @@ compile_old.bat
 deploy.py
 HelloWorld.sol
 TestLibrary.sol
+Allotment_legacy.sol
+Allotment _checkpoint.sol
+TestService.java
+TestController.java
