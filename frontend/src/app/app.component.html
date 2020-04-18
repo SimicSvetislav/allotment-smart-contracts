@@ -14,11 +14,11 @@
             <!-- <spanclass="sr-only">(current)</span>--></a>
         </li>
         <li class="nav-item" [ngClass]="activeTab=='Contracts' ? 'active' : 'inactive'">
-          <a class="nav-link" href="#" (click)="navigate('Contracts', '/contracts')">Contracts </a>
+          <a class="nav-link" href="#" (click)="navigate('Contracts', '/proposals')">Contracts </a>
         </li>
-        <li class="nav-item" [ngClass]="activeTab=='Proposals' ? 'active' : 'inactive'">
+        <!--<li class="nav-item" [ngClass]="activeTab=='Proposals' ? 'active' : 'inactive'">
           <a class="nav-link" href="#" (click)="navigate('Proposals', '/proposals')">Proposals <span *ngIf="newProposals > 0" class="badge badge-danger">{{newProposals}}</span></a>
-        </li>
+        </li> -->
         <li class="nav-item" [ngClass]="activeTab=='Propose' ? 'active' : 'inactive'">
           <a class="nav-link" href="#" (click)="navigate('Propose', '/propose')">Propose </a>
         </li>
@@ -32,11 +32,7 @@
       <ng-template #other_content>
         <button class="btn rounded-btn" type="submit" (click)="login()">Log in</button>
       </ng-template>
-  
-  
     </form>
   </nav>
-  
-  <router-outlet></router-outlet>
 
 <router-outlet></router-outlet>

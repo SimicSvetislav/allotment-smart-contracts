@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
 
   user: User = new User();
   constructor(private router: Router, private authService: AuthService,
-              private autService: AuthService, private toastr: ToastrService) { }
+              private toastr: ToastrService) { }
   str = '';
 
   private loginInfo: AuthLoginInfo;
@@ -33,6 +33,7 @@ export class LoginComponent implements OnInit {
 
   home() {
     this.router.navigate(['/profile']);
+    this.authService.setActiveTab('Profile');
   }
 
   login() {
@@ -50,6 +51,7 @@ export class LoginComponent implements OnInit {
 
         this.isLoginFailed = false;
         this.isLoggedIn = true;
+        this.authService.setActiveTab('Profile');
         this.router.navigate(['/profile']);
       }
 

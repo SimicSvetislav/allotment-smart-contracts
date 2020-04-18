@@ -21,18 +21,18 @@ export class AuthService {
   constructor(private router: Router, private http: HttpClient) { }
 
   public setToken(token: string) {
-    localStorage.setItem('token', token);
+    sessionStorage.setItem('token', token);
   }
 
   public getToken(): string {
-    const storedData = localStorage.getItem('token');
+    const storedData = sessionStorage.getItem('token');
     return storedData;
     // return storedData != null ? storedData.accessToken : null;
   }
 
   public deleteToken() {
-    localStorage.removeItem('token');
-    // localStorage.setItem('token', null);
+    sessionStorage.removeItem('token');
+    // sessionStorage.setItem('token', null);
   }
 
   public isAuthenticated(): boolean {
@@ -43,6 +43,7 @@ export class AuthService {
   public logOut() {
     this.deleteToken();
     this.isUserLoggedIn.next(false);
+    this.setActiveTab('Profile');
     this.router.navigate(['/login']);
   }
 
@@ -78,11 +79,11 @@ export class AuthService {
   }
 
   public setActiveTab(value: string) {
-    localStorage.setItem(ACTIVE_TAB_KEY, value);
+    sessionStorage.setItem(ACTIVE_TAB_KEY, value);
   }
 
   public getActiveTab(): string {
-    const at = localStorage.getItem(ACTIVE_TAB_KEY);
+    const at = sessionStorage.getItem(ACTIVE_TAB_KEY);
     return at != null ? at : 'Profile';
   }
 

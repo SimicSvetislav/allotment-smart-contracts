@@ -1,80 +1,116 @@
 <header class="header" >
     <div class="header-inner container">
+        <div id="sourceCodeDiv" class="float-right">
+            (<a href="http://localhost:8080/api/files/source" target="_blank">Source code</a>)
+        </div>
         <h2><p class='text-center'>New contract proposal</p></h2>
     </div>
 </header>
-<div id="proposalForm" class='container offset-md-1 col-md-10'>
-    <form>
+<form name="form" (ngSubmit)="validate(f, f2) && submit()" #f="ngForm" novalidate>
+<!-- <form name="form" (ngSubmit)="submit(f2)" #f="ngForm" novalidate> -->
+    <div id="proposalForm" class='container offset-md-1 col-md-10'>
         <div class="form-row">
-            <div class="form-group col md-6">  
+            <div class="form-group col-md-6">  
                 <label for="dp1">Start date</label>
                 <div class="input-group">
                     <input class="form-control" placeholder="Choose start date..."
-                            name="dp1" id="dp1" [(ngModel)]="startDate" ngbDatepicker #d1="ngbDatepicker">
+                            name="dp1" id="dp1" [(ngModel)]="startDate" 
+                            ngbDatepicker #dp1="ngbDatepicker" (ngModelChange)="ch()">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" (click)="d1.toggle()" type="button">
+                        <button class="btn btn-outline-secondary" (click)="dp1Toggle(dp1)" type="button">
                             <i class="far fa-calendar-alt"></i>
                         </button>
-                    </div> 
+                    </div>  
+                </div> 
+                <div *ngIf="date1Error1" class="alert alert-danger">
+                    Required
                 </div>
+                <div *ngIf="date1Error2" class="alert alert-danger">
+                    Must be valid date
+                </div> 
             </div>
-            <div class="form-group col md-6">
+            <div class="form-group col-md-6">
                 <label for="dp2">End date</label>
                 <div class="input-group">
                     <input class="form-control" placeholder="Choose end date..."
-                            name="dp2" id="dp2" [(ngModel)]="endDate" ngbDatepicker #d2="ngbDatepicker">
+                            name="dp2" id="dp2" [(ngModel)]="endDate" 
+                            ngbDatepicker #dp2="ngbDatepicker" (ngModelChange)="ch2()">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" (click)="d2.toggle()" type="button">
+                        <button class="btn btn-outline-secondary" (click)="dp2Toggle(dp2)" type="button">
                             <i class="far fa-calendar-alt"></i>
                         </button>
                     </div> 
                 </div>
+                <div *ngIf="date2Error1" class="alert alert-danger">
+                    Required
+                </div>
+                <div *ngIf="date2Error2" class="alert alert-danger">
+                    Must be valid date 
+                </div> 
             </div>
         </div>
         <br />
         <div class="form-row">
-            <div class="form-group col md-6">  
+            <div class="form-group col-md-6">
                 <label for="dp3">Main season start date</label>
                 <div class="input-group">
                     <input class="form-control" placeholder="Choose start date..."
-                            name="dp3" id="dp3" [(ngModel)]="mainStartDate" ngbDatepicker #d3="ngbDatepicker">
+                            name="dp3" id="dp3" [(ngModel)]="mainStartDate" 
+                            ngbDatepicker #dp3="ngbDatepicker" (ngModelChange)="ch3()">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" (click)="d3.toggle()" type="button">
+                        <button class="btn btn-outline-secondary" (click)="dp3Toggle(dp3)" type="button">
                             <i class="far fa-calendar-alt"></i>
                         </button>
                     </div> 
                 </div>
+                <div *ngIf="date3Error1" class="alert alert-danger">
+                    Required
+                </div>
+                <div *ngIf="date3Error2" class="alert alert-danger">
+                    Must be valid date 
+                </div> 
             </div>
-            <div class="form-group col md-6">
+            <div class="form-group col-md-6">
                 <label for="dp4">Main season end date</label>
                 <div class="input-group">
                     <input class="form-control" placeholder="Choose end date..."
-                            name="dp4" [(ngModel)]="mainEndDate" ngbDatepicker #d4="ngbDatepicker">
+                            name="dp4" [(ngModel)]="mainEndDate" 
+                            ngbDatepicker #dp4="ngbDatepicker" (ngModelChange)="ch4()">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" (click)="d4.toggle()" type="button">
+                        <button class="btn btn-outline-secondary" (click)="dp4Toggle(dp4)" type="button">
                             <i class="far fa-calendar-alt"></i>
                         </button>
                     </div> 
                 </div>
+                <div *ngIf="date4Error1" class="alert alert-danger">
+                    Required
+                </div>
+                <div *ngIf="date4Error2" class="alert alert-danger">
+                    Must be valid date 
+                </div> 
             </div>
         </div>
         <br />
         <div class='form-row'>
             <div class="form-group col-md-6">
-                <label for="orgComboBox">Other organization</label>
-                <select #t (change)="onOrgChange(t)" id='orgComboBox' class="browser-default custom-select">
-                    <option selected="" disabled>Choose other organization...</option>
+                <label for="orgComboBox">Other organization (<span *ngIf="repr.type==='Agency'; else elseOrg">accomodation</span>
+                <ng-template #elseOrg>agency</ng-template>)</label>
+                <select [disabled]="contractId" [(ngModel)]="selectedOrgId" #orgComboBox name="orgComboBox" (change)="onOrgChange(orgComboBox)" id='orgComboBox' class="browser-default custom-select">
+                    <option [ngValue]=0 selected="" disabled>Choose other organization...</option>
                     <option *ngFor="let org of organizations" [ngValue]="org.id">
                         {{org.name}}
                     </option>
                 </select>
+                <div *ngIf="orgError" class="alert alert-danger">
+                    Required
+                </div> 
             </div>
             <div *ngIf="statusDropdownList" class="form-group col-md-6">
                 <label for="hotelsMultiComboBox">Accomodations</label>
                 <ng-multiselect-dropdown
                     id="hotelsMultiComboBox"
                     name="hotelsMultiComboBoxName"
-                    [placeholder]="'Choose hotels...'"
+                    [placeholder]="'Choose accomodation objects...'"
                     [data]="hotels"
                     [(ngModel)]="selectedHotels"
                     [settings]="dropdownSettings"
@@ -82,31 +118,66 @@
                     (onSelectAll)="onSelectAll($event)"
                     >
                 </ng-multiselect-dropdown>
+                <div *ngIf="hotelError" class="alert alert-danger">
+                    Select at least one accomodation object
+                </div> 
             </div>
         </div>
         <div class='form-row roomsInfoSection'>
-            <div class="form-group col-md-6">
-                <label for="numOfRooms">Select rooms</label>
-                <div class='form-row'>
-                    <div class="form-group col-md-8">
-                        <input type="number" class="form-control" multiple="1.0" step="1" min=1 [(ngModel)]="ri.noRooms" name="numOfRooms" placeholder="Enter number of rooms..."> 
+            <form class="col-md-6" name="form" (ngSubmit)="f2.form.valid && addRI(f2)" #f2="ngForm" novalidate>
+                <div class="form-group">
+                    <label for="numOfRooms">Select rooms</label>   
+                    <div class='form-row'> 
+                        <div class="form-group col-md-8">
+                            <input required pattern="[1-9][0-9]*" #numOfRooms="ngModel" type="number" class="form-control" multiple="1.0" step="1" min=1 [(ngModel)]="ri.noRooms" name="numOfRooms" placeholder="Enter number of rooms...">  
+                        </div>
+                    </div>
+                    <div class='form-row'>
+                        <br />
+                        <div class="form-group col-md-8">
+                            <div *ngIf="f2.submitted && numOfRooms.invalid"
+                                class="alert alert-danger">
+                                <div *ngIf="numOfRooms.errors.required">
+                                    Required
+                                </div>
+                                <div *ngIf="numOfRooms.errors.pattern"> 
+                                    Must be positive whole number
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="numOfBeds">with</label>
+                    <div class='form-row'>
+                        <div class="form-group col-md-8">
+                            <input required pattern="[1-9][0-9]*" #numOfBeds="ngModel" multiple="1.0" step="1" min=1 class="form-control" type="number" [(ngModel)]="ri.beds" name="numOfBeds" placeholder="Enter number of beds...">
+                        </div>
+                    </div>
+                    <div class='form-row'>
+                        <div class="form-group col-md-8">
+                            <div *ngIf="f2.submitted && numOfBeds.invalid"
+                                class="alert alert-danger">
+                                <div *ngIf="numOfBeds.errors.required">
+                                    Required
+                                </div>
+                                <div *ngIf="numOfBeds.errors.pattern">
+                                    Must be positive whole number
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='form-row'>
+                        <div class="form-group col-md-8">
+                            <button type="submit" class="btn rounded-btn float-right">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <label for="numOfRooms">with</label>
-                <div class='form-row'>
-                    <div class="form-group col-md-8">
-                        <input multiple="1.0" step="1" min=1 class="form-control" type="number" [(ngModel)]="ri.beds" name="numOfBeds" placeholder="Enter number of beds...">
-                    </div>
-                </div>
-                <div class='form-row'>
-                    <div class="form-group col-md-8">
-                        <button class="btn rounded-btn float-right" (click)="addRI()" type="button">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </form>
             <div class='form-group col-md-6'>
+                <div *ngIf="roomsError" class="alert alert-danger">
+                    Select at least one room
+                </div> 
                 <div class='form-row' *ngIf="roomsInfo.length > 0">
                     <div class="form-group col-md-4">
                         <label for="selectRI">Number of rooms</label>
@@ -143,36 +214,72 @@
             <div class="form-group col-md-3">
                 <label for="priceHB">Half-board price</label>
                 <div class="input-group">
-                    <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.prices[0]' type="number" class="form-control" name="priceHB" id="priceHB" placeholder="Enter price in weis...">
+                    <input pattern="[1-9][0-9]*" #priceHB="ngModel" multiple="2.0" step="1" min=1 [(ngModel)]='contract.prices[0]' type="number" class="form-control" name="priceHB" id="priceHB" placeholder="Enter price in weis..." required>
                     <div class="input-group-append">
                         <span class="input-group-text wei-append" id="inputGroupAppend1">wei</span>
                     </div>
                 </div>
-            </div>
+                <div *ngIf="f.submitted && priceHB.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="priceHB.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="priceHB.errors.pattern">
+                        Must be positive whole number
+                    </div>
+                </div> 
+            </div> 
             <div class="form-group col-md-3">
                 <label for="priceFB">Full-board price</label>
                 <div class="input-group">
-                    <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.prices[1]' type="number" class="form-control" name="priceFB" id="priceFB" placeholder="Enter price in weis...">
+                    <input pattern="[1-9][0-9]*" required #priceFB="ngModel" multiple="1.0" step="1" min=1 [(ngModel)]='contract.prices[1]' type="number" class="form-control" name="priceFB" id="priceFB" placeholder="Enter price in weis...">
                     <div class="input-group-append">
                         <span class="input-group-text wei-append" id="inputGroupAppend2">wei</span>
                     </div>
                 </div>
+                <div *ngIf="f.submitted && priceFB.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="priceFB.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="priceFB.errors.pattern">
+                        Must be positive whole number
+                    </div>
+                </div> 
             </div>
             <div class="form-group col-md-3">
                 <label for="priceOS">Offseason price</label>
                 <div class="input-group">
-                    <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.prices[2]' type="number" class="form-control" name="priceOS" id="priceOS" placeholder="Enter price in weis...">
+                    <input pattern="[1-9][0-9]*" required  #priceOS="ngModel" multiple="1.0" step="1" min=1 [(ngModel)]='contract.prices[2]' type="number" class="form-control" name="priceOS" id="priceOS" placeholder="Enter price in weis...">
                     <div class="input-group-append">
                         <span class="input-group-text wei-append" id="inputGroupAppend3">wei</span>
                     </div>
                 </div>
+                <div *ngIf="f.submitted && priceOS.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="priceOS.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="priceOS.errors.pattern">
+                        Must be positive whole number
+                    </div>
+                </div> 
             </div>
             <div class="form-group col-md-3">
                 <label for="priceKids">Kids price</label>
                 <div class="input-group">
-                    <input multiple="1.0" step="1" min=0 [(ngModel)]='contract.prices[3]' type="number" class="form-control" name="priceKids" id="priceKids" placeholder="Enter price in weis...">
+                    <input pattern="[1-9][0-9]*" required #priceKids="ngModel" multiple="1.0" step="1" min=0 [(ngModel)]='contract.prices[3]' type="number" class="form-control" name="priceKids" id="priceKids" placeholder="Enter price in weis...">
                     <div class="input-group-append">
                         <span class="input-group-text wei-append" id="inputGroupAppend4">wei</span>
+                    </div>
+                </div>
+                <div *ngIf="f.submitted && priceKids.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="priceKids.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="priceKids.errors.pattern">
+                        Must be positive whole number
                     </div>
                 </div>
             </div>
@@ -181,19 +288,77 @@
         <div class="form-row">
             <div class="form-group col-md-3">
                 <label for="psThresh">Preseason threshold</label>
-                <input multiple="1.0" step="1" min=0 [(ngModel)]='contract.someContrains[2]' type="number" class="form-control" name="psThresh" id="psThresh" placeholder="Enter percentage...">
+                <div class="input-group">
+                    <input required pattern="-?[0-9]+" [max]="100" #psThresh="ngModel" multiple="1.0" step="1" min=0 [(ngModel)]='contract.someContrains[2]' type="number" class="form-control" name="psThresh" id="psThresh" placeholder="Enter percentage...">
+                    <div class="input-group-append">
+                        <span class="input-group-text wei-append" id="inputGroupAppend21">%</span>
+                    </div>
+                </div>
+                <div *ngIf="f.submitted && psThresh.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="psThresh.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="psThresh.errors.pattern">
+                        Must be positive whole number
+                    </div>
+                    <div *ngIf="psThresh.errors.min">
+                        Can't be less than 0%
+                    </div>
+                    <div *ngIf="psThresh.errors.max">
+                        Can't be more than 100%
+                    </div>
+                </div>
             </div>
             <div class="form-group col-md-3">
                 <label for="badPsPenalty">Bad preseason penalty</label>
-                <input multiple="1.0" step="1" min=0 [(ngModel)]='contract.someContrains[3]' type="number" class="form-control" name="badPsPenalty" id="badPsPenalty" placeholder="Enter percentage...">
+                <div class="input-group">
+                    <input required pattern="-?[0-9]+" [max]="100"  #badPsPenalty="ngModel" multiple="1.0" step="1" min=0 [(ngModel)]='contract.someContrains[3]' type="number" class="form-control" name="badPsPenalty" id="badPsPenalty" placeholder="Enter percentage...">
+                    <div class="input-group-append">
+                        <span class="input-group-text wei-append" id="inputGroupAppend22">%</span>
+                    </div>
+                </div>
+                <div *ngIf="f.submitted && badPsPenalty.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="badPsPenalty.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="badPsPenalty.errors.pattern">
+                        Must be whole number
+                    </div>
+                    <div *ngIf="badPsPenalty.errors.min">
+                        Can't be less than 0%
+                    </div>
+                    <div *ngIf="badPsPenalty.errors.max">
+                        Can't be more than 100%
+                    </div>
+                </div>
             </div>
             <div class="form-group col-md-3">
                 <label for="infPeriod">Informing period</label>
-                <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.periods[0]' type="number" class="form-control" name="infPeriod" id="infPeriod" placeholder="Enter number of days...">
+                <input required pattern="[1-9][0-9]*" #infPeriod="ngModel" multiple="1.0" step="1" min=1 [(ngModel)]='contract.periods[0]' type="number" class="form-control" name="infPeriod" id="infPeriod" placeholder="Enter number of days...">
+                <div *ngIf="f.submitted && infPeriod.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="infPeriod.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="infPeriod.errors.pattern">
+                        Must be positive whole number
+                    </div>
+                </div>
             </div>
             <div class="form-group col-md-3">
                 <label for="withPeriod">Withdrawal period</label>
-                <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.periods[1]' type="number" class="form-control" name="withPeriod" id="withPeriod" placeholder="Enter number of days...">
+                <input required pattern="[1-9][0-9]*" #withPeriod="ngModel" multiple="1.0" step="1" min=1 [(ngModel)]='contract.periods[1]' type="number" class="form-control" name="withPeriod" id="withPeriod" placeholder="Enter number of days...">
+                <div *ngIf="f.submitted && withPeriod.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="withPeriod.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="withPeriod.errors.pattern">
+                        Must be positive whole number
+                    </div>
+                </div>
             </div>
         </div>
         <br />
@@ -201,35 +366,82 @@
             <div class="form-group col-md-4">
                 <label for="advancePayment">Advance payment</label>
                 <div class="input-group">
-                    <input multiple="1.0" step="1" min=0 [(ngModel)]='contract.advancePayment' type="number" class="form-control" name="advancePayment" id="advancePayment" placeholder="Enter value in weis..">
+                    <input pattern="[1-9][0-9]*" required #advancePayment="ngModel" multiple="1.0" step="1" min=0 [(ngModel)]='contract.advancePayment' type="number" class="form-control" name="advancePayment" id="advancePayment" placeholder="Enter value in weis..">
                     <div class="input-group-append">
                         <span class="input-group-text wei-append" id="inputGroupAppend5">wei</span>
+                    </div>
+                </div>
+                <div *ngIf="f.submitted && advancePayment.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="advancePayment.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="advancePayment.errors.pattern">
+                        Must be positive whole number
                     </div>
                 </div>
             </div>
             <div class="form-group col-md-4">
                 <label for="commision">Commision</label>
-                <input multiple="1.0" step="1" min=1 [(ngModel)]='contract.commision' type="number" class="form-control" name="commision" id="commision" placeholder="Enter percentage...">
+                <div class="input-group">
+                    <input required pattern="[1-9][0-9]*" [max]="100" #commision="ngModel" multiple="1.0" step="1" min=1 [(ngModel)]='contract.commision' type="number" class="form-control" name="commision" id="commision" placeholder="Enter percentage...">
+                    <div class="input-group-append">
+                        <span class="input-group-text wei-append" id="inputGroupAppend31">%</span>
+                    </div>
+                </div>
+                <div *ngIf="f.submitted && commision.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="commision.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="commision.errors.pattern">
+                        Must be positive whole number
+                    </div>
+                    <div *ngIf="commision.errors.max">
+                        Can't be more than 100%
+                    </div>
+                </div>
             </div>
             <div class="form-group col-md-4">
                 <label for="fine">Fine per bed</label>
                 <div class="input-group">
-                    <input multiple="1.0" step="1" min=0 [(ngModel)]='contract.finePerBed' type="number" class="form-control" name="fine" id="fine" placeholder="Enter value in weis...">
+                    <input pattern="[0-9]+" required #finePerBed="ngModel" multiple="1.0" step="1" min=0 [(ngModel)]='contract.finePerBed' type="number" class="form-control" name="fine" id="fine" placeholder="Enter value in weis...">
                     <div class="input-group-append">
                         <span class="input-group-text wei-append" id="inputGroupAppend6">wei</span>
                     </div>
                 </div>
+                <div *ngIf="f.submitted && finePerBed.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="finePerBed.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="finePerBed.errors.pattern">
+                        Can't be negative value
+                    </div>
+                </div> 
             </div>
         </div>
         <br />
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="courtName">Court name</label>
-                <input [(ngModel)]='contract.courtName' type="text" class="form-control" name="courtName" id="courtName" placeholder="Enter court name...">
+                <input #courtName="ngModel" required [(ngModel)]='contract.courtName' type="text" class="form-control" name="courtName" id="courtName" placeholder="Enter court name...">
+                <div *ngIf="f.submitted && courtName.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="courtName.errors.required">
+                        Required
+                    </div>
+                </div>
             </div>
             <div class="form-group col-md-6">
                 <label for="courtLocation">Court location</label>
-                <input [(ngModel)]='contract.courtLocation' type="text" class="form-control" name="courtLocation" id="courtLocation" placeholder="Enter court location...">
+                <input #courtLocation="ngModel" required [(ngModel)]='contract.courtLocation' type="text" class="form-control" name="courtLocation" id="courtLocation" placeholder="Enter court location...">
+                <div *ngIf="f.submitted && courtLocation.invalid"
+                    class="alert alert-danger">
+                    <div *ngIf="courtLocation.errors.required">
+                        Required
+                    </div>
+                </div>
             </div>
         </div>
         <br />
@@ -242,8 +454,8 @@
                 </div>
             </div>
         </div>
-    </form>
-</div>
-<div class="wrapper">
-    <button type="submit" class="btn rounded-btn mb-5" (click)="submit()">Submit</button>
-</div>
+    </div>
+    <div class="wrapper form-group">
+        <button type="submit" class="btn rounded-btn mb-5">Submit</button>
+    </div>
+</form>

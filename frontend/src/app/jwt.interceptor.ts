@@ -19,7 +19,7 @@ export class JwtInterceptor implements HttpInterceptor {
         // alert('BAD RESPONSE');
         if (err instanceof HttpErrorResponse) {
 
-            console.error(err.message);
+            console.log(err.message);
 
             switch (err.status) {
                 case 0: {
@@ -33,7 +33,11 @@ export class JwtInterceptor implements HttpInterceptor {
                     break;
                 }
                 default: {
-                    this.toastr.error(err.error);
+                    if (err.error.message) {
+                        this.toastr.error(err.error.message);
+                    } else {
+                        this.toastr.error(err.error);
+                    }
                     break;
                 }
             }

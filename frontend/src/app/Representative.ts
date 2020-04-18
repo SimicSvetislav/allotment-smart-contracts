@@ -13,4 +13,6 @@ export class Representative {
     orgCity: string;
     orgCountry: string;
 
+    orgId: number;
+
 }

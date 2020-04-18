@@ -1,12 +1,19 @@
 import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 export class Contract {
-    agencyId: number;
-    acoomodationId: number;
+    agId = 0;
+    accId = 0;
+
+    agName: string;
+    accName: string;
+
+    accomodationRepr: number;
+    agencyRepr: number;
 
     startDate: number;
     endDate: number;
 
     hotels = new Array<number>();
+    hotelNames = new Array<string>();
 
     prices = new Array<number>(4);
     someContrains = new Array<number>(6);
@@ -21,4 +28,9 @@ export class Contract {
 
     courtName = '';
     courtLocation = '';
+
+    id: number;
+
+    agreementDate: number;
+    balance: number;
 }

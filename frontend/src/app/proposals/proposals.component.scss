@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css?family=Lobster');
+
+#sb {
+    margin-right: 20px;
+}
+
+#title{
+    color: aliceblue;
+    font-family: 'Lobster';
+}
+
+.panel-group {
+    background-color: white !important; 
+    border-radius: 15px;
+    border: 2px solid brown;
+    padding: 5px;
+    margin-bottom: 5px; 
+}
+
+.panel-heading {
+    font-size: x-large;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+}
+
+.card {
+border-radius: 15px;
+// border: 2px solid brown;
+padding: 5px; 
+}
+
+hr {
+    border-color: brown;
+    
+}
+
+.table {
+    width: 100%;
+}
+
+.rounded-btn{
+    -webkit-border-radius: 50px;
+            border-radius: 50px;
+    color: rgba(255,255,255,0.8);
+    background: #227391;
+    border: 2px solid rgba(0,0,0,0.8);
+    font-size: 18px;
+    line-height: 40px;
+    padding: 0 25px;
+}
+.rounded-btn:hover {
+    background-color: #31acd8;
+}
+.rounded-btn:focus,.rounded-btn:active,.rounded-btn:visited{
+    color: rgba(255,255,255,1);
+    border: 2px solid rgba(255,255,255,1);
+    outline: none;
+}
+
+.wrapper {
+    text-align: center;
+}
+
+.button {
+    position: absolute;
+    top: 50%;
+}
+ 
+#proposalForm {
+    border-style: double;
+    padding: 20px 10px 20px 10px;
+    margin-bottom: 20px;
+}
+
+.wei-append {
+    background-color: #868e96;
+    color: white;
+}
+
+.roomsInfoSection {
+    border-style: dotted;
+    border-width: thin;
+}
+
+.rounded-remove-btn:hover {
+    background-color: rgb(231, 82, 82);
+}
+
+.rounded-remove-btn {
+    background: rgb(189, 40, 40);
+}

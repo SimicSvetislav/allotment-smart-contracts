@@ -1,1 +1,496 @@
-<p>proposals works!</p>
+<header class="header" >
+    <div class="header-inner container">
+        <h2><p class='text-center'>Negotations in progress</p></h2>
+    </div>
+</header>
+<div class="container">
+  <div class="row">
+    <div class="col sm-8">
+      <div *ngFor="let c of contracts" class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <ng-container *ngIf="repr.type==='Agency'; else typeOrg">
+              Accomodation organization: {{c.accName}} 
+              <ng-container *ngIf="c.accomodationRepr != 0;">
+                (representative: {{c.accomodationRepr}})
+              </ng-container>
+            </ng-container>
+            <ng-template #typeOrg>
+              Agency: {{c.agName}}
+              <ng-container *ngIf="c.agencyRepr != 0;">
+                (representative: {{c.agencyRepr}})
+              </ng-container>
+            </ng-template>
+            <hr />
+              {{c.startDate | date: 'dd. MMM yyyy.'}} - {{c.endDate | date: 'dd. MMM yyyy.'}}
+            <hr />
+            <a role="button" data-toggle="collapse" href="#collapseExample{{c.id}}">Details...</a>
+          </div>
+          <div class="collapse" id="collapseExample{{c.id}}">
+            <div class="card">
+              <div class="card-header">
+                
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col sm-4">
+                    <p>Main season: <b>{{c.someContrains[4] | date: 'dd. MMM yyyy.'}} - {{c.someContrains[5] | date: 'dd. MMM yyyy.'}}</b></p>
+                    <p>Accomodations: <b>{{c.hotelNames}}</b></p>
+                    <p>Rooms: <b>{{roomsInfoStrings.get(c.id)}}</b></p>
+                    <p>Court name: <b>{{c.courtName}}</b></p>
+                    <p>Court location: <b>{{c.courtLocation}}</b></p>
+                  </div> 
+                  <div class="col sm-4"> 
+                    <p>Half-board price: <b>{{c.prices[0]}} wei</b></p>
+                    <p>Full-board price: <b>{{c.prices[1]}} wei</b></p>
+                    <p>Offseason price: <b>{{c.prices[2]}} wei</b></p>
+                    <p>Kids price: <b>{{c.prices[3]}} wei</b></p>
+                    <p>Informing period: <b>{{c.periods[0]}} day(s)</b></p> 
+                    <p>Withdrawal period: <b>{{c.periods[1]}} day(s)</b></p> 
+                  </div>
+                  <div class="col sm-4"> 
+                    <p>Advance payment: <b>{{c.advancePayment}} wei</b></p>
+                    <p>Commision: <b>{{c.commision}}%</b></p>
+                    <p>Fine per bed: <b>{{c.finePerBed}} wei</b></p>
+                    <p>Preseason threshold: <b>{{c.someContrains[2]}}%</b></p>
+                    <p>Bad preseason penalty: <b>{{c.someContrains[3]}}%</b></p>
+                    <p>Clause: <ng-container *ngIf="c.clause === true; else elseClause">
+                      <b>Yes</b>
+                    </ng-container>
+                    <ng-template #elseClause>
+                      <b>No</b>
+                    </ng-template>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="(repr.type === 'Agency' && c.agencyRepr==0) || (repr.type === 'Accomodation organization' && c.accomodationRepr==0); else noAction" class="card-footer text-muted text-center">
+                <button (click)="reject(c.id)" class="btn btn-danger mr-5">Reject</button>
+                <button (click)="counteroffer(c.id)" class="btn btn-primary">Counteroffer</button>
+                <button (click)="accept(c.id)" class="btn btn-success ml-5">Accept</button>
+              </div>
+              <ng-template #noAction>
+                <div class="card-footer text-muted text-center">
+                  Waiting for response
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr />
+<header class="header" >
+  <div class="header-inner container">
+      <h2><p class='text-center'>Concluded contracts</p></h2>
+  </div>
+</header>
+<div class="container">
+  <div class="row">
+    <div class="col sm-8">
+      <div *ngFor="let c of contractsCOW" class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <ng-container *ngIf="repr.type==='Agency'; else typeOrg">
+              Accomodation organization: {{c.accName}} 
+              <ng-container *ngIf="c.accomodationRepr != 0;">
+                (representative: {{c.accomodationRepr}})
+              </ng-container>
+            </ng-container>
+            <ng-template #typeOrg>
+              Agency: {{c.agName}} 
+              <ng-container *ngIf="c.agencyRepr != 0;">
+                (representative: {{c.agencyRepr}})
+              </ng-container> 
+            </ng-template>
+            <hr />
+              {{c.startDate | date: 'dd. MMM yyyy.'}} - {{c.endDate | date: 'dd. MMM yyyy.'}}
+            <hr />
+            <a role="button" data-toggle="collapse" href="#collapseCOW{{c.id}}">Details...</a>
+          </div>
+          <div class="collapse" id="collapseCOW{{c.id}}">
+            <div class="card">
+              <div class="card-header">
+                
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col sm-4">
+                    <p>Main season: <b>{{c.someContrains[4] | date: 'dd. MMM yyyy.'}} - {{c.someContrains[5] | date: 'dd. MMM yyyy.'}}</b></p>
+                    <p>Accomodations: <b>{{c.hotelNames}}</b></p>
+                    <p>Rooms: <b>{{roomsInfoStrings.get(c.id)}}</b></p>
+                    <p>Court name: <b>{{c.courtName}}</b></p>
+                    <p>Court location: <b>{{c.courtLocation}}</b></p>
+                  </div>
+                  <div class="col sm-4"> 
+                    <p>Half-board price: <b>{{c.prices[0]}} wei</b></p>
+                    <p>Full-board price: <b>{{c.prices[1]}} wei</b></p>
+                    <p>Offseason price: <b>{{c.prices[2]}} wei</b></p>
+                    <p>Kids price: <b>{{c.prices[3]}} wei</b></p>
+                    <p>Informing period: <b>{{c.periods[0]}} day(s)</b></p>
+                    <p>Withdrawal period: <b>{{c.periods[1]}} day(s)</b></p>
+                  </div>
+                  <div class="col sm-4"> 
+                    <p>Advance payment: <b>{{c.advancePayment}} wei</b></p>
+                    <p>Commision: <b>{{c.commision}}%</b></p>
+                    <p>Fine per bed: <b>{{c.finePerBed}} wei</b></p>
+                    <p>Preseason threshold: <b>{{c.someContrains[2]}}%</b></p>
+                    <p>Bad preseason penalty: <b>{{c.someContrains[3]}}%</b></p>
+                    <p>Clause: <ng-container *ngIf="c.clause === true; else elseClause">
+                      <b>Yes</b>
+                    </ng-container>
+                    <ng-template #elseClause>
+                      <b>No</b>
+                    </ng-template>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <form name="wf" (ngSubmit)="validateW(wf) && withdraw(c.id)" *ngIf="repr.id == c.agencyRepr" #wf="ngForm" novalidate>
+                  <div id="withdrawForm" class='container'>
+                    <div class="row">
+                      <div class="form-group col-md-5">  
+                        <label for="wd1">From
+                        </label>
+                        <div class="input-group">
+                            <input class="form-control" placeholder="Choose start date..."
+                                    name="wd1" id="wd1" [(ngModel)]="startDate" 
+                                    ngbDatepicker #wd1="ngbDatepicker" (ngModelChange)="ch3()">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" (click)="dp3Toggle(wd1)" type="button">
+                                    <i class="far fa-calendar-alt"></i>
+                                </button>
+                            </div>  
+                        </div> 
+                        <div *ngIf="date3Error1" class="alert alert-danger">
+                            Required
+                        </div>
+                        <div *ngIf="date3Error2" class="alert alert-danger">
+                            Must be valid date
+                        </div> 
+                      </div>
+                      <div class="form-group col-md-5">
+                        <label for="wd2">To</label>
+                        <div class="input-group">
+                            <input class="form-control" placeholder="Choose end date..."
+                                    name="wd2" id="wd2" [(ngModel)]="endDate" 
+                                    ngbDatepicker #wd2="ngbDatepicker" (ngModelChange)="ch4()">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" (click)="dp4Toggle(wd2)" type="button">
+                                    <i class="far fa-calendar-alt"></i>
+                                </button>
+                            </div> 
+                        </div>
+                        <div *ngIf="date4Error1" class="alert alert-danger">
+                            Required
+                        </div>
+                        <div *ngIf="date4Error2" class="alert alert-danger">
+                            Must be valid date 
+                        </div> 
+                    </div>
+                      <div class="form-group col-md-2">
+                        <label for="bt2">&nbsp;</label>
+                        <button name="bt2" type="submit" class="form-control btn btn-warning">Withdraw</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+                <div *ngIf="repr.id == c.agencyRepr" class="container">
+                  <div class="row">
+                    <div class="offset-md-8 col-md-4">
+                      <button type="button" (click)="openReserveModal(c.id)" class="btn btn-success float-right" data-toggle="modal" data-target="#reserveModal"> <!--data-target=".bd-example-modal-lg"-->
+                        Reserve
+                      </button>  
+                    </div>
+                  </div> 
+                </div>
+                <br />
+                <div *ngIf="repr.type == 'Agency'" class="container">
+                  <div class="row">
+                    <div class="offset-md-8 col-md-4">
+                      <button type="button" (click)="openListModal(c.id)" class="btn btn-info float-right" data-toggle="modal" data-target="#reservationsListModal">
+                        Reservations list
+                      </button>  
+                    </div>
+                  </div> 
+                </div>
+                <hr />
+                <br />
+                <div *ngIf="repr.id == c.agencyRepr || repr.id == c.accomodationRepr" class="container">
+                  <div class="row">
+                    <div class="offset-md-8 col-md-4">
+                      <button (click)="break(c.id)" class="btn btn-danger float-right"><i class="fas fa-exclamation-triangle"></i> Break</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal dialog for reservation-->
+<div class="modal fade bd-example-modal-lg" id="reserveModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Reserve rooms</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="f" (ngSubmit)="validate(f, f2) && reserve()" #f="ngForm" novalidate>
+          <div class="form-row">
+            <div class="form-group col-md-6">  
+                <label for="dp1">Start date</label>
+                <div class="input-group">
+                    <input class="form-control" placeholder="Choose start date..."
+                            name="dp1" id="dp1" [(ngModel)]="reserveStartDate" 
+                            ngbDatepicker #dp1="ngbDatepicker" (ngModelChange)="ch()">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" (click)="dp1Toggle(dp1)" type="button">
+                            <i class="far fa-calendar-alt"></i>
+                        </button>
+                    </div>  
+                </div> 
+                <div *ngIf="date1Error1" class="alert alert-danger">
+                    Required
+                </div>
+                <div *ngIf="date1Error2" class="alert alert-danger">
+                    Must be valid date
+                </div> 
+            </div>
+            <div class="form-group col-md-6">
+                <label for="dp2">End date</label>
+                <div class="input-group">
+                    <input class="form-control" placeholder="Choose end date..."
+                            name="dp2" id="dp2" [(ngModel)]="reserveEndDate" 
+                            ngbDatepicker #dp2="ngbDatepicker" (ngModelChange)="ch2()">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" (click)="dp2Toggle(dp2)" type="button">
+                            <i class="far fa-calendar-alt"></i>
+                        </button>
+                    </div> 
+                </div>
+                <div *ngIf="date2Error1" class="alert alert-danger">
+                    Required
+                </div>
+                <div *ngIf="date2Error2" class="alert alert-danger">
+                    Must be valid date 
+                </div> 
+            </div> 
+          </div>
+          <div class='form-row'>
+            <div class="form-group col-md-6">
+                <label for="priceComboBox">Rate</label>
+                <div class="input-group">
+                  <select [(ngModel)]="reservation.priceType" (change)="cbChange()" #priceComboBox name="priceComboBox" id='priceComboBox' class="browser-default custom-select">
+                    <option [ngValue]=0 selected="" disabled>Choose price type...</option>
+                    <option [ngValue]=1 selected="1">Half-board</option>
+                    <option [ngValue]=2 selected="2">Full-board</option>
+                </select>
+                </div>
+                <div *ngIf="cbError" class="alert alert-danger">
+                  Required
+                </div> 
+            </div>
+          </div>
+          <div class='form-row roomsInfoSection'>
+            <form class="col-md-6" name="form" (ngSubmit)="f2.form.valid && addRik(f2)" #f2="ngForm" novalidate>
+                <div class="form-group">
+                    <label for="numOfRooms">Select rooms</label>   
+                    <div class='form-row'> 
+                        <div class="form-group col-md-11">
+                            <input required pattern="[1-9][0-9]*" #numOfRooms="ngModel" type="number" class="form-control" multiple="1.0" step="1" min=1 [(ngModel)]="rik.noRooms" name="numOfRooms" placeholder="Enter number of rooms...">  
+                        </div>
+                    </div>
+                    <div class='form-row'>
+                        <br />
+                        <div class="form-group col-md-11">
+                            <div *ngIf="f2.submitted && numOfRooms.invalid"
+                                class="alert alert-danger">
+                                <div *ngIf="numOfRooms.errors.required">
+                                    Required
+                                </div>
+                                <div *ngIf="numOfRooms.errors.pattern"> 
+                                    Must be positive whole number
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="numOfBeds">with</label>
+                    <div class='form-row'>
+                        <div class="form-group col-md-11">
+                            <input required pattern="[1-9][0-9]*" #numOfBeds="ngModel" multiple="1.0" step="1" min=1 class="form-control" type="number" [(ngModel)]="rik.beds" name="numOfBeds" placeholder="Enter number of beds...">
+                        </div>
+                    </div>
+                    <div class='form-row'>
+                        <div class="form-group col-md-11">
+                            <div *ngIf="f2.submitted && numOfBeds.invalid"
+                                class="alert alert-danger">
+                                <div *ngIf="numOfBeds.errors.required">
+                                    Required
+                                </div>
+                                <div *ngIf="numOfBeds.errors.pattern">
+                                    Must be positive whole number
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="kidsNum">Kids</label>
+                    <div class='form-row'>
+                        <div class="form-group col-md-11">
+                            <input required pattern="[0-9]+" #kidsNum="ngModel" multiple="1.0" step="1" min=0 class="form-control" type="number" [(ngModel)]="rik.kids" name="kidsNum" placeholder="Enter number of kids...">
+                        </div>
+                    </div>
+                    <div class='form-row'> 
+                        <div class="form-group col-md-11">
+                            <div *ngIf="f2.submitted && kidsNum.invalid"
+                                class="alert alert-danger">
+                                <div *ngIf="kidsNum.errors.required">
+                                    Required
+                                </div>
+                                <div *ngIf="kidsNum.errors.pattern">
+                                    Can't be negative number
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='form-row'>
+                        <div class="form-group col-md-11">
+                            <button type="submit" class="btn rounded-btn float-right">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class='form-group col-md-6'>
+                <div *ngIf="roomsError" class="alert alert-danger">
+                    Select at least one room
+                </div> 
+                <div class='form-row' *ngIf="reservation.roomsInfo.length > 0">
+                    <div class="form-group col-md-3">
+                        <label for="selectRI">Number of rooms</label>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="selectRI">Beds</label>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <label for="selectRI">Kids</label>
+                  </div>
+                    <div class="form-group col-md-3 text-right float-right">
+                        <label for="selectRI">Remove</label>
+                    </div>
+                </div>
+                <div class='form-row' *ngFor="let rinfo of reservation.roomsInfo">
+                    <div class="form-group col-md-3">
+                        <ul class="list-group list-group-flush" >
+                            <li class="list-group-item">{{rinfo.noRooms}}</li>
+                        </ul>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">{{rinfo.beds}}</li>
+                        </ul>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <ul class="list-group list-group-flush">
+                          <li class="list-group-item">{{rinfo.kids}}</li>
+                      </ul>
+                  </div>
+                    <div class="form-group col-md-3">
+                        <button class="btn rounded-remove-btn rounded-btn float-right" (click)="removeRoomsInfo(rinfo)" type="button">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                    <hr />
+                </div>
+            </div>
+        </div>
+        
+      
+      <div class="modal-footer"> 
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-success">Reserve</button> 
+      </div>
+      </form>  
+    </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal dialog with list of reservations-->
+<div class="modal fade bd-example-modal-lg" id="reservationsListModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">List of all reservations for contract with id {{contractID}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="col-md-11">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <!--<th scope="col">ID</th>-->
+                <th scope="col">From</th>
+                <th scope="col">To</th>
+                <th scope="col">Beds</th>
+                <th scope="col">Rooms</th>
+                <th scope="col">Price (in weis)</th>
+                <th scope="col">Rate</th>
+                <th scope="col">Main season</th>
+                <th scope="col">Number of kids</th>
+                <th scope="col">Verification</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let res of reservationsDTO">
+                <!-- <th scope="row">{{res.id}}</th> -->
+                <td>{{res.from | date: 'dd.MM.yyyy.'}}</td>
+                <td>{{res.to | date: 'dd.MM.yyyy.'}}</td>
+                <td>{{res.beds}}</td>
+                <td>{{res.rooms}}</td>
+                <td>{{res.price}}</td>
+                <td>{{res.priceType | rateFormat}}</td>
+                <td>{{res.mainSeason}}</td>
+                <td>{{res.kids}}</td>
+                <td *ngIf="res.provision == true; else notVerified;">
+                  Verified
+                </td>
+                <ng-template #notVerified>
+                  <td><button type="button" (click)="verify(res.id, res.beds)" class="btn btn-warning">Verify</button></td>
+                </ng-template>
+                <!-- <td>{{res.provision | yesNo}}</td>
+                <td *ngIf="!res.provision">
+                  <button type="button" (click)="verify(res.id, res.beds)" class="btn btn-warning">Verify</button>
+                </td> -->
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>footer</td>
+                <td>elements</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- <button (click)="debug()" class="btn btn-danger">Debug</button> -->

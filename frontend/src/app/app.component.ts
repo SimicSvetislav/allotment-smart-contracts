@@ -29,6 +29,7 @@ export class AppComponent implements OnInit/*, AfterViewInit*/ {
                 });*/
                 this.authService.isUserLoggedIn.subscribe( value => {
                   this.logged = value;
+                  this.activeTab = this.authService.getActiveTab();
                   // get number of new proposals
 
                 });
