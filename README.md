@@ -11,6 +11,7 @@ Opisani postupak pokretanja sistema se odnosi na Windows operativni sistem.
 - MySQL sistem za upravljanje bazama podataka
 - Node package manager (npm)
 - Angular-CLI
+- Ganache CLI
 - Git
 
 Pokrenuti komandu `ganache-cli` iz *command prompt*-a i prekopirati adrese i privatne ključeve u fajl `accounts.data`, koji se nalazi na putanji `backend\src\main\resources\`.
