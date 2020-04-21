@@ -418,7 +418,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         uint available = _roomsByBedNumbers[uint8(beds)];
         
         if (_restriction) {
-            available = div(mul(available, _badOffSeasonMaxPenalty), 100);
+            available = div(mul(available, sub(100, _badOffSeasonMaxPenalty)), 100);
         }
         
         if (available <= 0) {
@@ -627,10 +627,12 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
             revert(_errorMessage);
         }
         
-        if (isAfter(now, _mainSeasonEnd)) {
+        // emit MyEvent(1, "checkOffseason"); 
+        
+        /*if (isAfter(now, _mainSeasonEnd)) {
             _errorMessage = "Main season already ended";
             revert(_errorMessage);
-        }
+        }*/
         
         uint256 preseasonDays = diffDays(_startDate, _mainSeasonStart);
         uint256 totalNights = mul(_totalBeds, preseasonDays);
@@ -651,15 +653,38 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         // Sracunati koliko procenata od ukupnog broja nocenja je iskorisceno
         
         uint256 factor = 10000;
-        uint256 percentUsed = div(mul(totalUnused, factor), mul(totalNights, 100));
+        uint256 percentUnused = div(mul(totalUnused, factor), mul(totalNights, 100));
         
         // uint256 threshold = mul(_preSeasonMinimum, 100); 
-        if (percentUsed < _preSeasonMinimum) {
+        if (sub(100, percentUnused) < _preSeasonMinimum) {
             _restriction = true;
         }
         
-        return percentUsed;
+        return percentUnused;
         
+    }
+    
+    function uint2str(uint _i) 
+        internal 
+        pure 
+        returns (string memory _uintAsString) 
+    {
+        if (_i == 0) {
+            return "0";
+        }
+        uint j = _i;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+        while (_i != 0) {
+            bstr[k--] = byte(uint8(48 + _i % 10));
+            _i /= 10;
+        }
+        return string(bstr);
     }
     
     // Doraditi
@@ -672,7 +697,6 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
             revert(_errorMessage);
             // return false;
         }
-        
         
         // 1. Provera treba li agencija da plati nadoknade
         
@@ -702,9 +726,8 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
             uint totalBeds = 0;
             uint occupied = 0;
             
-            
             for (uint n = 0; n < _bedOptions.length; n=add(n,1)) {
-                    
+                
                 uint8 beds = _bedOptions[n];
                 
                 totalBeds = add(totalBeds, mul(_roomsByBedNumbers[beds], beds));
@@ -716,6 +739,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
                         occupied = add(occupied, mul(ress[j].numberOfRooms, beds));
                     }
                 }
+            
             }
             
             // 1.3 izracunati koliko kreveta nije popunjeno u jednom danu
@@ -727,11 +751,20 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         
         // 2. Slanje ukupne svote koju agencija treba da plati kao odstetu
         
+        if (totalFine > address(this).balance) {
+            revert(concat(toSlice("Not enough ether to pay fine: "), toSlice(uint2str(totalFine))));
+        }
+        
         _accomodationAddress.transfer(totalFine);
         
         // 3. Slanje svote koju je ugostitelj uplatio kao depozit
         
         uint deposit = _totalBeds * _finePerBed;
+        
+        
+        if (deposit > address(this).balance) {
+            revert("Not enough ether to return deposit to accomodation organization");
+        }
         
         _accomodationAddress.transfer(deposit);
         

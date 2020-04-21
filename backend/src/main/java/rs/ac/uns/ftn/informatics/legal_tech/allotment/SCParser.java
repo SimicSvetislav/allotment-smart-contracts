@@ -524,6 +524,11 @@ public class SCParser {
 		bi = getNextRange(bytes, i++);
 		sc.add(BigInteger.valueOf(bi.longValue() * 1000));
 		
+		// Restriction
+		bi = getNextRange(bytes, i++);
+		Boolean restricted = bi.intValue() == 0 ? false : true;
+		cInfo.setRestricted(restricted);
+		
 		cInfo.setSomeContrains(sc);
 		
 		return cInfo;

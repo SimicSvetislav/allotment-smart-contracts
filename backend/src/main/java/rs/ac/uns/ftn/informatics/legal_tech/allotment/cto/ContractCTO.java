@@ -35,5 +35,6 @@ public @Data class ContractCTO {
 	public BigInteger agreementDate;
 	public BigInteger balance;
 	public BigInteger availablebalance;
+	public Boolean restricted;
 	
 }

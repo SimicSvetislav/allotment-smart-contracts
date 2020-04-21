@@ -1,6 +1,5 @@
 package rs.ac.uns.ftn.informatics.legal_tech.allotment;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -23,8 +22,6 @@ public class ScheduledTasks {
 
 	private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
 
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-
 	@Autowired
 	private ContractRepository contractRepository;
 	
@@ -36,15 +33,9 @@ public class ScheduledTasks {
 	
 	private Long PLATFORM_ACCOUNT = 10L;
 	
-	@Async
-	@Scheduled(fixedRate = 3*60*1000)
-	public void logTime() {
-		log.info("The time is now {}", dateFormat.format(new Date()));
-	}
-	
 	// Method sample
 	@Async
-	@Scheduled(fixedRate = 3*60*1000, initialDelay = 10000)
+	@Scheduled(fixedRate = 60*1000, initialDelay = 10000)
 	public void checkOffseasonSample() {
 		System.out.println("Fake checkOffseasonSample() triggered");
 		
@@ -100,7 +91,7 @@ public class ScheduledTasks {
 	
 	// Method sample
 	@Async
-	@Scheduled(fixedRate = 10*1000, initialDelay = 10000)
+	@Scheduled(fixedRate = 60*1000, initialDelay = 10000)
 	public void checkExpirationSample() {
 		System.out.println("Fake checkExpirationSample() triggered");
 		
@@ -109,6 +100,11 @@ public class ScheduledTasks {
 		Date today = new Date();
 		
 		for (Contract c: allContracts) {
+			
+			if (!c.getStatus().equals("COW")) {
+				continue;
+			}
+			
 			@SuppressWarnings("deprecation")
 			Allotment contract = Allotment.load(
 					c.getAddress(), web3j, reprService.getCredentials(PLATFORM_ACCOUNT),
@@ -139,6 +135,11 @@ public class ScheduledTasks {
 		Date today = new Date();
 		
 		for (Contract c: allContracts) {
+			
+			if (!c.getStatus().equals("COW")) {
+				continue;
+			}
+			
 			@SuppressWarnings("deprecation")
 			Allotment contract = Allotment.load(
 					c.getAddress(), web3j, reprService.getCredentials(PLATFORM_ACCOUNT),
