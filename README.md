@@ -12,7 +12,7 @@ Opisani postupak pokretanja sistema se odnosi na Windows operativni sistem.
 - Angular CLI
 - Ganache CLI
 
-Pokrenuti komandu `ganache-cli -m "myth like bonus scare over problem client lizard pioneer submit female collect"`.
+Pokrenuti testnu mrežu pokretanjem komande `ganache-cli -m "myth like bonus scare over problem client lizard pioneer submit female collect"`.
 
 Pokrenuti MySQL server.
 
@@ -38,5 +38,8 @@ Logovanje je moguće izvršiti korišćenjem kredencijala nekih od predefinisani
 > Username: mmika
 >
 > Password: 123
+
+Pristup podacima o raspoloživom stanju u wei-ma na nalozima je moguć na adresi http://localhost:8080/api/web3j/balancesWei.
+Redni broj balansa odgovara `id` vrednosti organizacije (prva vrednost je vrednost koju na raspologanju ima agencija ili ugostitelj koji ima id=1 itd.).
 
 Ukoliko se menja sadržaj pametnog ugovora potrebno je pokrenuti skriptu `compile.bat`, koja kompajlira fajl `Allotment.sol` i smešta generisani java fajl na odgovarajuću putanju.
