@@ -649,13 +649,12 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         }
         
         // Sracunati koliko procenata od ukupnog broja nocenja je iskorisceno
-        // Brojevi se mnoze sa 10 000 kako bi se dobila tacnost na dve decimale 
         
         uint256 factor = 10000;
-        uint256 percentUsed = div(mul(totalUnused, factor), mul(totalNights, factor));
+        uint256 percentUsed = div(mul(totalUnused, factor), mul(totalNights, 100));
         
-        uint256 threshold = mul(_preSeasonMinimum, 100); 
-        if (percentUsed < threshold) {
+        // uint256 threshold = mul(_preSeasonMinimum, 100); 
+        if (percentUsed < _preSeasonMinimum) {
             _restriction = true;
         }
         
@@ -680,7 +679,7 @@ contract Allotment is SafeMath, DateUtilsLibrary, strings {
         uint notRealizedStays = 0;
         
         // Proci kroz sve dane 
-        for (uint day = _startDate; !isSame(day, _endDate); addDays2(day, 1)) {
+        for (uint day = _startDate; !isSame(day, _endDate); day = addDays2(day, 1)) {
             
             // Proiveriti da li izvrsen povracaj kapaciteta za trenutni datum
             
