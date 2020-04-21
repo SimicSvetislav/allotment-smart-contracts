@@ -32,9 +32,9 @@ public class RepresentativeService {
 		repository.save(repr);
 	}
 
-	public Credentials getCredentials(Long userId) {
-				
-		Account account = accountsRepository.findById(userId).get();
+	public Credentials getCredentials(Long orgId) {
+		
+		Account account = accountsRepository.findById(orgId).get();
 		
 		return Credentials.create(account.getPrivateKey());
 		
@@ -78,6 +78,10 @@ public class RepresentativeService {
 
 	public Representative getById(Long id) {
 		return repository.findById(id).get();
+	}
+
+	public Representative findById(Long repr) {
+		return repository.findById(repr).get();
 	}
 
 }

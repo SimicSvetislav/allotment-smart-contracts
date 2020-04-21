@@ -27,5 +27,6 @@ export class ReservationDTO {
     kids: number;
 
     beds: number;
-    rooms: number
+    rooms: number;
+    commision: number;
 }

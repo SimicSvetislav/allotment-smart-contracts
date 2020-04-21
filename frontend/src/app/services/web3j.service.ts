@@ -11,6 +11,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class Web3jService {
+
   constructor(private http: HttpClient) { }
 
   public test(): Observable<string> {
@@ -37,19 +38,19 @@ export class Web3jService {
   }
 
   reserve(id: number, reprId:number,  reservation: SingleReservation): Observable<any> {
-    return this.http.post(WEB3J_API + 'reservation/' + id + '/' + reprId, reservation);
+    return this.http.post(WEB3J_API + 'reservation/' + id + '/' + reprId, reservation, {responseType: 'text'});
   }
 
   withdraw(id: number, reprId: number, period: Period): Observable<any> {
-    return this.http.post(WEB3J_API + 'withdrawal/' + id + '/' + reprId, period);
+    return this.http.post(WEB3J_API + 'withdrawal/' + id + '/' + reprId, period, {responseType: 'text'});
   }
 
   break(id: number, repr: number,  reprType: string): Observable<any> {
 
     if (reprType === 'Agency') {
-      return this.http.get(WEB3J_API + 'breakAg/' + id + '/' + repr);
+      return this.http.get(WEB3J_API + 'breakAg/' + id + '/' + repr, {responseType: 'text'});
     } else {
-      return this.http.get(WEB3J_API + 'breakAcc/' + id + '/' + repr);
+      return this.http.get(WEB3J_API + 'breakAcc/' + id + '/' + repr, {responseType: 'text'});
     }
   }
 
@@ -57,8 +58,16 @@ export class Web3jService {
     return this.http.get(WEB3J_API + 'reservations/' + contractId);
   }
 
+  getWithdrawals(contractId: number): Observable<any> {
+    return this.http.get(WEB3J_API + 'withdrawals/' + contractId);
+  }
+
   verifyReservation(contractId: number, reservationId: number, beds: number, representativeId: number): Observable<any> {
     return this.http.get(WEB3J_API + 'verify/' + contractId + '/' + reservationId + '/' + beds + '/' + representativeId, {responseType: 'text'});
+  }
+
+  sendFunds(contractId: number, reprId: number, fundsValue: number): Observable<any> {
+    return this.http.get(WEB3J_API + 'sendFunds/' + contractId + '/' + reprId + '/' + fundsValue, {responseType: 'text'});
   }
 
 }

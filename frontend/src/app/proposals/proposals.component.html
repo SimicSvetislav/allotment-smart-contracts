@@ -1,3 +1,9 @@
+<p>
+  Logged in as <b>{{repr.fullName}}</b>&nbsp;(id=<b>{{repr.id}}</b>)
+</p>
+<p>
+  <b>{{repr.type}}</b>&nbsp;-&nbsp;<b>{{repr.orgName}}</b>
+</p>
 <header class="header" >
     <div class="header-inner container">
         <h2><p class='text-center'>Negotations in progress</p></h2>
@@ -15,7 +21,7 @@
                 (representative: {{c.accomodationRepr}})
               </ng-container>
             </ng-container>
-            <ng-template #typeOrg>
+            <ng-template #typeOrg> 
               Agency: {{c.agName}}
               <ng-container *ngIf="c.agencyRepr != 0;">
                 (representative: {{c.agencyRepr}})
@@ -23,7 +29,7 @@
             </ng-template>
             <hr />
               {{c.startDate | date: 'dd. MMM yyyy.'}} - {{c.endDate | date: 'dd. MMM yyyy.'}}
-            <hr />
+            <hr /> 
             <a role="button" data-toggle="collapse" href="#collapseExample{{c.id}}">Details...</a>
           </div>
           <div class="collapse" id="collapseExample{{c.id}}">
@@ -123,6 +129,9 @@
                     <p>Rooms: <b>{{roomsInfoStrings.get(c.id)}}</b></p>
                     <p>Court name: <b>{{c.courtName}}</b></p>
                     <p>Court location: <b>{{c.courtLocation}}</b></p>
+                    <p>Agreement date: <b>{{c.agreementDate*1000 | date: 'dd. MMM yyyy.'}}</b></p>
+                    <p>Balance: <b>{{c.balance}} wei</b></p>
+                    <p>Available balance: <b>{{c.availablebalance}} wei</b></p>
                   </div>
                   <div class="col sm-4"> 
                     <p>Half-board price: <b>{{c.prices[0]}} wei</b></p>
@@ -145,11 +154,12 @@
                       <b>No</b>
                     </ng-template>
                     </p>
+                    <p>Restricted: <b>{{c.restricted | yesNo}}</b></p>
                   </div>
                 </div>
               </div>
               <div class="card-footer">
-                <form name="wf" (ngSubmit)="validateW(wf) && withdraw(c.id)" *ngIf="repr.id == c.agencyRepr" #wf="ngForm" novalidate>
+                <form name="wf" (ngSubmit)="validateW(wf) && withdraw(c.id)" *ngIf="repr.id == c.agencyRepr && c.clause === false" #wf="ngForm" novalidate>
                   <div id="withdrawForm" class='container'>
                     <div class="row">
                       <div class="form-group col-md-5">  
@@ -198,20 +208,58 @@
                     </div>
                   </div>
                 </form>
-                <div *ngIf="repr.id == c.agencyRepr" class="container">
+                <div class="container">
                   <div class="row">
-                    <div class="offset-md-8 col-md-4">
-                      <button type="button" (click)="openReserveModal(c.id)" class="btn btn-success float-right" data-toggle="modal" data-target="#reserveModal"> <!--data-target=".bd-example-modal-lg"-->
-                        Reserve
+                    <div class="offset-md-10 col-md-2">
+                      <button *ngIf="c.clause === false" type="button" (click)="openWithdrawalsList(c.id)" class="form-control btn btn-info float-right" data-toggle="modal" data-target="#withdrawalsListModal">
+                        Withdrawals list
                       </button>  
                     </div>
                   </div> 
                 </div>
+                <div id="sendForm" class='container'>
+                  <form name="sendFundsForm" (ngSubmit)="validateSendFunds(sfForm) && sendFundsMethod(c.id)" *ngIf="repr.id == c.agencyRepr" #sfForm="ngForm" novalidate>
+                    <div class='form-row'>
+                      <div class="form-group col-md-5">
+                        <label for="sendFunds">Send funds</label>
+                        <div class="input-group">
+                            <input pattern="[1-9][0-9]*" #sendFunds="ngModel" multiple="1.0" step="1" min=1 [(ngModel)]='fundsValue' type="number" class="form-control" name="sendFunds" id="sendFunds" placeholder="Enter value in weis..." required>
+                            <div class="input-group-append">
+                                <span class="input-group-text wei-append" id="inputGroupAppend1">wei</span>
+                            </div>
+                        </div>
+                        <div *ngIf="sfForm.submitted && sendFunds.invalid"
+                            class="alert alert-danger">
+                            <div *ngIf="sendFunds.errors.required">
+                                Required
+                            </div>
+                            <div *ngIf="sendFunds.errors.pattern">
+                                Must be positive whole number 
+                            </div>
+                        </div> 
+                      </div> 
+                      <div class="form-group offset-md-5 col-md-2">
+                        <label for="bt3">&nbsp;</label> 
+                        <button name="bt3" type="submit" class="form-control btn btn-primary">Send</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
                 <br />
-                <div *ngIf="repr.type == 'Agency'" class="container">
+                <div *ngIf="repr.id == c.agencyRepr" class="container">
                   <div class="row">
-                    <div class="offset-md-8 col-md-4">
-                      <button type="button" (click)="openListModal(c.id)" class="btn btn-info float-right" data-toggle="modal" data-target="#reservationsListModal">
+                    <div class="offset-md-10 col-md-2">
+                      <button type="button" (click)="openReserveModal(c.id)" class="form-control btn btn-success float-right" data-toggle="modal" data-target="#reserveModal"> <!--data-target=".bd-example-modal-lg"-->
+                        Reserve
+                      </button>
+                    </div>
+                  </div> 
+                </div>
+                <br />
+                <div class="container">
+                  <div class="row">
+                    <div class="offset-md-10 col-md-2">
+                      <button type="button" (click)="openListModal(c.id)" class="form-control btn btn-info float-right" data-toggle="modal" data-target="#reservationsListModal">
                         Reservations list
                       </button>  
                     </div>
@@ -414,8 +462,6 @@
                 </div>
             </div>
         </div>
-        
-      
       <div class="modal-footer"> 
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         <button type="submit" class="btn btn-success">Reserve</button> 
@@ -442,11 +488,13 @@
             <thead>
               <tr>
                 <!--<th scope="col">ID</th>-->
-                <th scope="col">From</th>
-                <th scope="col">To</th>
+                <!-- <th scope="col">From</th>
+                <th scope="col">To</th> -->
+                <th scope="col">Period</th>
                 <th scope="col">Beds</th>
                 <th scope="col">Rooms</th>
                 <th scope="col">Price (in weis)</th>
+                <th scope="col">Commision (in weis)</th>
                 <th scope="col">Rate</th>
                 <th scope="col">Main season</th>
                 <th scope="col">Number of kids</th>
@@ -456,19 +504,22 @@
             <tbody>
               <tr *ngFor="let res of reservationsDTO">
                 <!-- <th scope="row">{{res.id}}</th> -->
-                <td>{{res.from | date: 'dd.MM.yyyy.'}}</td>
-                <td>{{res.to | date: 'dd.MM.yyyy.'}}</td>
+                <td>{{res.from | date: 'dd.MM.yyyy.'}} - {{res.to | date: 'dd.MM.yyyy.'}}</td>
                 <td>{{res.beds}}</td>
                 <td>{{res.rooms}}</td>
                 <td>{{res.price}}</td>
+                <td>{{res.commision}}</td>
                 <td>{{res.priceType | rateFormat}}</td>
-                <td>{{res.mainSeason}}</td>
+                <td>{{res.mainSeason | yesNo}}</td>
                 <td>{{res.kids}}</td>
                 <td *ngIf="res.provision == true; else notVerified;">
                   Verified
                 </td>
                 <ng-template #notVerified>
-                  <td><button type="button" (click)="verify(res.id, res.beds)" class="btn btn-warning">Verify</button></td>
+                  <td><button *ngIf="repr.type == 'Agency'; else cantVerify" type="button" (click)="verify(res.id, res.beds)" class="btn btn-warning">Verify</button></td>
+                  <ng-template #cantVerify>
+                    <td>Not verified</td>
+                  </ng-template>
                 </ng-template>
                 <!-- <td>{{res.provision | yesNo}}</td>
                 <td *ngIf="!res.provision">
@@ -476,12 +527,6 @@
                 </td> -->
               </tr>
             </tbody>
-            <tfoot>
-              <tr>
-                <td>footer</td>
-                <td>elements</td>
-              </tr>
-            </tfoot>
           </table>
         </div>
       </div>
@@ -492,5 +537,41 @@
   </div>
 </div>
 
+<!--Modal dialog with list of withdrawals-->
+<div class="modal fade bd-example-modal-lg" id="withdrawalsListModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">List of all withdrawals for contract with id {{contractID}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="col-md-11">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <!--<th scope="col">ID</th>-->
+                <th scope="col">From</th>
+                <th scope="col">To</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let withdrawal of withdrawalsDTO">
+                <!-- <th scope="row">{{res.id}}</th> -->
+                <td>{{withdrawal.startDate | date: 'dd.MM.yyyy.'}}</td>
+                <td>{{withdrawal.endDate | date: 'dd.MM.yyyy.'}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- <button (click)="debug()" class="btn btn-danger">Debug</button> -->

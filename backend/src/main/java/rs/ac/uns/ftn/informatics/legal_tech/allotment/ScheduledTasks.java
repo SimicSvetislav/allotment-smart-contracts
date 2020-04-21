@@ -117,6 +117,8 @@ public class ScheduledTasks {
 			if (today.after(c.getEndDate())) {
 				try {
 					contract.finalizeContract().send();
+					c.setStatus("FIN");
+					contractRepository.save(c);
 				} catch (Exception e) {
 					log.info("Function reverted or error occured while calling finalizeContract() for contract with id=" + c.getId());
 					// e.printStackTrace();
@@ -132,7 +134,7 @@ public class ScheduledTasks {
 	public void checkExpiration() {
 		System.out.println("Real checkExpiration() triggered");
 		
-List<Contract> allContracts = contractRepository.findAll();
+		List<Contract> allContracts = contractRepository.findAll();
 		
 		Date today = new Date();
 		
@@ -145,6 +147,8 @@ List<Contract> allContracts = contractRepository.findAll();
 			if (today.after(c.getEndDate())) {
 				try {
 					contract.finalizeContract().send();
+					c.setStatus("FIN");
+					contractRepository.save(c);
 				} catch (Exception e) {
 					log.info("Function reverted or error occured while calling finalizeContract() for contract with id=" + c.getId());
 					// e.printStackTrace();

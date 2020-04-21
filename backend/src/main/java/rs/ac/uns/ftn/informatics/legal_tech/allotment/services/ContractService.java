@@ -43,6 +43,7 @@ import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Agency;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Contract;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.ContractRoomsInfo;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Hotel;
+import rs.ac.uns.ftn.informatics.legal_tech.allotment.entities.Representative;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.repositories.AccomodationRepository;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.repositories.AccountsRepository;
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.repositories.AgencyRepository;
@@ -108,6 +109,8 @@ public class ContractService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Deploy failed");
 			// return "Deploy failed";
 		}
+		
+		
 		
 		if (contract.getId() != null && contract.getId() > 0) {
 			contractRoomsInfoRepository.deleteByContract_id(contract.getId());
@@ -399,7 +402,7 @@ public class ContractService {
 	public String transfer(String from, String to, Long userId) {
 		TransactionManager transactionManager = new RawTransactionManager(
                 web3j,
-                reprService.getCredentials(userId)
+                reprService.getCredentialsFromOrg(userId)
         );
 
         Transfer transfer = new Transfer(web3j, transactionManager);
@@ -422,10 +425,10 @@ public class ContractService {
         return getEtherBalance(to).toString();
 	}
 	
-	public String transferWeis(String from, String to, BigDecimal amount) {
+	public String transferWeis(Long fromAddressId, String to, BigDecimal amount) {
 		TransactionManager transactionManager = new RawTransactionManager(
                 web3j,
-                reprService.getCredentials(PLATFORM_ACCOUNT)
+                reprService.getCredentials(fromAddressId)
         );
 
         Transfer transfer = new Transfer(web3j, transactionManager);
@@ -473,9 +476,11 @@ public class ContractService {
 		
 		String msg = null;
 		
+		Representative representative = reprService.findById(repr);
+		
 		@SuppressWarnings("deprecation")
 		Allotment contract = Allotment.load(
-				contractAddress, web3j, reprService.getCredentials(repr),
+				contractAddress, web3j, reprService.getCredentials(representative.getRepresenting().getId()),
 		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
 
 		TransactionReceipt tr = null;
@@ -487,6 +492,8 @@ public class ContractService {
 			msg = "RESERVED";
 		} catch (Exception e) {
 			System.out.println("Failed to reserve!");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reservation failed");
+			// throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to reserve");
 			//e.printStackTrace();
 		}
 		System.out.println("Returned: " + tr);
@@ -534,7 +541,7 @@ public class ContractService {
 		
 		return ret;
 	}*/
-	
+
 	public String getRessAll(String contractAddress) {
 		String  ret = "";
 		
@@ -650,7 +657,7 @@ public class ContractService {
 		
 		@SuppressWarnings("deprecation")
 		Allotment contract = Allotment.load(
-				contractAddress, web3j, reprService.getCredentials(userId),
+				contractAddress, web3j, reprService.getCredentialsFromOrg(userId),
 		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
 
 		TransactionReceipt tr = null;
@@ -661,10 +668,14 @@ public class ContractService {
 		} catch (Exception e) {
 			msg = "Failed to break agreement";
 			System.out.println("Failed to break agreement!");
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, msg);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Breaking contract failed");
 			//e.printStackTrace();
 		}
 		System.out.println("Returned: " + tr);
+		
+		Contract contr = findContractByAddress(contractAddress);
+		contr.setStatus("BRK");
+		repository.save(contr);
 		
 		return msg;
 	}
@@ -675,14 +686,14 @@ public class ContractService {
 		
 		@SuppressWarnings("deprecation")
 		Allotment contract = Allotment.load(
-				address, web3j, reprService.getCredentials(userId),
+				address, web3j, reprService.getCredentialsFromOrg(userId),
 		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
 
 		TransactionReceipt tr = null;
 		
 		try {
 			tr = contract.breakContract(BigInteger.valueOf(userId)).send();
-			msg = "Success";
+			msg = "Contract broken";
 		} catch (Exception e) {
 			// msg = "Failed";
 			// System.out.println("Failed to transfer!");
@@ -690,9 +701,13 @@ public class ContractService {
 			
 			msg = "Failed to withdraw";
 			System.out.println("Failed to break agreement!");
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, msg);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Breaking contract failed");
 		}
 		System.out.println("Returned: " + tr);
+		
+		Contract contr = findContractByAddress(address);
+		contr.setStatus("BRK");
+		repository.save(contr);
 		
 		return msg;
 	}
@@ -945,10 +960,10 @@ public class ContractService {
 		try {
 			tr = contract.withdrawRooms(startDate, endDate).send();
 			msg = "Success";
-		} catch (Exception e) { 
-			msg = "Failed to withdraw";
+		} catch (Exception e) {
 			System.out.println("Failed to withdraw!");
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, msg);
+			msg = "Withdraw not possible";
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Withdrawal failed");
 		}
 		
 		System.out.println(tr);
@@ -956,7 +971,7 @@ public class ContractService {
 		return msg;
 	}
 	
-	public String getWithdrawals(String contractAddress) {
+	public List<DateRange> getWithdrawals(String contractAddress) {
 		
 		String msg = "";
 		
@@ -974,7 +989,7 @@ public class ContractService {
 			msg = "Failed getting withdrawals";
 			e.printStackTrace();
 			System.out.println("Failed to get withdrawals!");
-			return msg;
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, msg);
 		}
 		
 		List<DateRange> withdrawals = SCParser.parseWithdrawals(bytes);
@@ -983,9 +998,8 @@ public class ContractService {
 			System.out.println(dateRange);
 		}
 		
-		return withdrawals.toString();	
+		return withdrawals;	
 	}
-
 
 	public List<Contract> findByAcc(Long acc_id) {
 		return repository.findByAccomodation_id(acc_id);
@@ -1100,23 +1114,22 @@ public class ContractService {
 		
 		ContractCTO cto = getContractInfo(c);
 		
-		// TODO Promenjeno
 		Accomodation accomod = accRepo.findById(cto.getAccId()).get();
-		Account accAccount = accountRepo.findByAccount(accomod.getAccount()).get(0);
+		// Account accAccount = accountRepo.findByAccount(accomod.getAccount()).get(0);
 		
 		Agency agen = agRepo.findById(cto.getAgId()).get();
-		Account agAccount = accountRepo.findByAccount(agen.getAccount()).get(0);
+		// Account agAccount = accountRepo.findByAccount(agen.getAccount()).get(0);
 		
-		String accAddress = accAccount.getAccount();
-		String agAddress = agAccount.getAccount();
+		// String accAddress = accAccount.getAccount();
+		// String agAddress = agAccount.getAccount();
 		String contractAddress = c.getAddress();
 		
 		BigDecimal guarantee = BigDecimal.valueOf(cto.getFinePerBed().longValueExact() * cto.getRoomsInfo().get(0).longValueExact());
 		BigDecimal guaranteeAgency = BigDecimal.valueOf(guarantee.longValue() + cto.getAdvancePayment().longValue());
 		
-		String balance = transferWeis(accAddress, contractAddress, guarantee);
+		String balance = transferWeis(accomod.getId(), contractAddress, guarantee);
 		System.out.println(balance);
-		balance = transferWeis(agAddress, contractAddress, guaranteeAgency);
+		balance = transferWeis(agen.getId(), contractAddress, guaranteeAgency);
 		System.out.println(balance);
 		
 		if (c.getAccReprId()==0) {
@@ -1142,7 +1155,7 @@ public class ContractService {
 		
 		@SuppressWarnings("deprecation")
 		Allotment contract = Allotment.load(
-				dbContract.getAddress(), web3j, reprService.getCredentials(agencyRepresentativeId),
+				dbContract.getAddress(), web3j, reprService.getCredentialsFromOrg(agencyRepresentativeId),
 		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
 		
 		
@@ -1153,10 +1166,29 @@ public class ContractService {
 		} catch (Exception e) {
 			msg = "Failed to verify!";
 			System.out.println("Failed to verify!");
+			// throw new ResponseStatusException(HttpStatus.BAD_REQUEST, getErrorMessage(dbContract.getAddress()));
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, msg);
 		}
 		
 		System.out.println(tr);
+		
+		return msg;
+	}
+	
+	private String getErrorMessage(String contractAddress) {
+		
+		String msg = "Unknown error occured";
+		
+		@SuppressWarnings("deprecation")
+		Allotment contract = Allotment.load(
+				contractAddress, web3j, reprService.getCredentials(PLATFORM_ACCOUNT),
+		        DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT);
+		
+		try {
+			msg = contract._errorMessage().send();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		return msg;
 	}

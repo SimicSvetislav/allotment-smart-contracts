@@ -34,4 +34,6 @@ public @Data class ContractDTO {
 	private Date mainSeasonStart;
 	private Date mainSeasonEnd;
 	
+	private Boolean restricted;
+	
 }

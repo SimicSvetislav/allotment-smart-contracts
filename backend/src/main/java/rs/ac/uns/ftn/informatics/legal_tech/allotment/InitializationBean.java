@@ -3,6 +3,8 @@ package rs.ac.uns.ftn.informatics.legal_tech.allotment;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -31,10 +33,13 @@ public class InitializationBean {
       System.out.println("Initialization bean triggered");
 		BufferedReader reader = null;
 		
-		Resource resource = new ClassPathResource("accounts.data");
+		// Resource resource = new ClassPathResource("accounts.data");
+		
+		InputStream is = AllotmentApplication.class.getClassLoader().getResourceAsStream("accounts.data");
 		
 		try {
-			reader = new BufferedReader(new FileReader(resource.getFile()));
+			// reader = new BufferedReader(new FileReader(resource.getFile()));
+			reader = new BufferedReader(new InputStreamReader(is));
 			
 			String line = null;
 			Account[] accounts = new Account[10];

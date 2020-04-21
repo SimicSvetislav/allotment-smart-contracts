@@ -1,3 +1,4 @@
+import { WithdrawalDTO } from './../WithdrawalDTO';
 import { Period } from './../Period';
 import { Reservation, SingleReservation, ReservationDTO } from './../Reservation';
 import { RoomsInfo, RoomsInfoKids } from './../RoomsInfo';
@@ -54,6 +55,9 @@ export class ProposalsComponent implements OnInit {
   contractID: number;
 
   reservationsDTO = new Array<ReservationDTO>();
+  withdrawalsDTO = new Array<WithdrawalDTO>();
+
+  fundsValue: number;
 
   ngOnInit() {
 
@@ -138,6 +142,7 @@ export class ProposalsComponent implements OnInit {
 
   reject(id: number) {
     this.web3j.reject(id).subscribe(data => {
+      this.toastr.warning('Proposal rejected')
       this.populate();
     }, error => console.error(error));
   }
@@ -177,6 +182,19 @@ export class ProposalsComponent implements OnInit {
       this.reservation.roomsInfo.push(this.rik);
       this.rik = new RoomsInfoKids();
     }
+
+    this.reservation.roomsInfo = this.reservation.roomsInfo.sort((a,b) => {
+      if (a.beds > b.beds) {
+        return 1;
+      }
+
+      if (a.beds < b.beds) {
+        return -1;
+      }
+
+      return 0;
+
+    });
 
     f2.submitted = false;
   }
@@ -284,8 +302,9 @@ export class ProposalsComponent implements OnInit {
       singleRes.kids = ri.kids;
 
       this.web3j.reserve(this.contractID, this.repr.id, singleRes).subscribe(data => {
-        alert('reserved')
-        this.populate();
+        // alert('reserved')
+        this.toastr.success('Reserved');
+        // this.populate();
       }, error => console.log(error));
 
     }
@@ -302,14 +321,14 @@ export class ProposalsComponent implements OnInit {
     }
 
     this.web3j.withdraw(id, this.repr.id, this.period).subscribe(data => {
-      alert('withdrawed')
-      this.populate();
+      this.toastr.success('Withdrawed')
+      // this.populate();
     }, error => console.log(error));
   }
 
   break(id: number) {
     this.web3j.break(id, this.repr.id, this.repr.type).subscribe(data => {
-      alert('broken')
+      this.toastr.success(data);
       this.populate();
     }, error => console.log(error));
   }
@@ -396,6 +415,20 @@ export class ProposalsComponent implements OnInit {
 
     this.web3j.getReservations(contractId).subscribe( data => {
       this.reservationsDTO = data;
+
+      this.reservationsDTO = this.reservationsDTO.sort((a,b) => {
+        if (a.from > b.from) {
+          return 1;
+        }
+
+        if (a.from < b.from) {
+          return -1;
+        }
+
+        return 0;
+
+      });
+
       /*for (let i=0; i<20; ++i) {
         this.reservationsDTO.push(new ReservationDTO());
       }*/
@@ -410,9 +443,65 @@ export class ProposalsComponent implements OnInit {
 
       this.web3j.getReservations(this.contractID).subscribe( list => {
         this.reservationsDTO = list;
+
+        this.reservationsDTO = this.reservationsDTO.sort((a,b) => {
+          if (a.from > b.from) {
+            return 1;
+          }
+
+          if (a.from < b.from) {
+            return -1;
+          }
+
+          return 0;
+
+        });
+
+        this.populate();
+
       }, error => console.log(error));
 
     }, error => console.log(error));
+
+  }
+
+
+  openWithdrawalsList(contractId: number) {
+    this.contractID = contractId;
+
+    this.web3j.getWithdrawals(contractId).subscribe( data => {
+      this.withdrawalsDTO = data;
+
+      this.withdrawalsDTO = this.withdrawalsDTO.sort((a,b) => {
+        if (a.startDate > b.startDate) {
+          return 1;
+        }
+
+        if (a.startDate < b.startDate) {
+          return -1;
+        }
+
+        return 0;
+
+      });
+
+    }, error => console.log(error));
+
+
+  }
+
+  validateSendFunds(forma: any) {
+    return forma.form.valid;
+  }
+
+  sendFundsMethod(contractId: number) {
+
+    this.web3j.sendFunds(contractId, this.repr.id, this.fundsValue).subscribe( data => {
+      this.toastr.success(data);
+      this.populate();
+      this.fundsValue = 0;
+    }, error => console.log(error));
+
 
   }
 

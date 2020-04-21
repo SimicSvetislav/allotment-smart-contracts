@@ -18,4 +18,6 @@ public @Data class ReservationDTO {
 	
 	private Boolean mainSeason;
 	private Integer kids;
+	
+	private Long commision;
 }

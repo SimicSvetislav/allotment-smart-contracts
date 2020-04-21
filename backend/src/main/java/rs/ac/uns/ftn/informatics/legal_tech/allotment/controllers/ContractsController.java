@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatics.legal_tech.allotment.controllers;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -264,6 +265,27 @@ public class ContractsController {
 		return new ResponseEntity<String>(retVal, HttpStatus.OK);
 		
 	}
+	
+	@GetMapping(path="/sendFunds/{contractId}/{reprId}/{fundsValue}")
+	public ResponseEntity<String> sendFunds(
+			@PathVariable("contractId") Long contractId,
+			@PathVariable("reprId") Long reprId,
+			@PathVariable("fundsValue") Long fundsValue
+			) {
+		
+		
+		Contract contract = service.findById(contractId);
+		
+		Representative representative = reprService.findById(reprId);
+		
+		String fromAddress = representative.getRepresenting().getAccount();
+		Long fromAddressId = representative.getRepresenting().getId();
+		String toAddress = contract.getAddress();
+		service.transferWeis(fromAddressId, toAddress, BigDecimal.valueOf(fundsValue));
+
+		return new ResponseEntity<String>("Funds sent to contract", HttpStatus.OK);
+		
+	}
 
 	@PostMapping(path="/breakAg/{userId}")
 	public ResponseEntity<String> breakAgency(
@@ -441,9 +463,9 @@ public class ContractsController {
 		String retVal = service.deployAllotment(contract);
 		
 		if (contract.getSomeContrains().get(0).longValue() != 0) {
-			service.accAgreed(retVal, contract.getSomeContrains().get(0).longValue());
+			service.agencyAgreed(retVal, contract.getSomeContrains().get(0).longValue());
 		} else if (contract.getSomeContrains().get(1).longValue() != 0) {
-			service.agencyAgreed(retVal, contract.getSomeContrains().get(1).longValue());
+			service.accAgreed(retVal, contract.getSomeContrains().get(1).longValue());
 		}
 		
 		return new ResponseEntity<String>(retVal, HttpStatus.OK);
@@ -538,10 +560,22 @@ public class ContractsController {
 	public ResponseEntity<String> getWithdrawals(@PathVariable("contract") String contract) {
 		
 		
-		String retVal = service.getWithdrawals(contract);
+		String retVal = service.getWithdrawals(contract).toString();
 
 		
 		return new ResponseEntity<String>(retVal, HttpStatus.OK);
+		
+	}
+	
+	@GetMapping(path="/withdrawals/{contractId}")
+	public ResponseEntity<List<DateRange>> getWithdrawals(@PathVariable("contractId") Long contractId) {
+		
+		Contract c = service.findById(contractId);
+		
+		List<DateRange> retVal = service.getWithdrawals(c.getAddress());
+
+		
+		return new ResponseEntity<List<DateRange>>(retVal, HttpStatus.OK);
 		
 	}
 	

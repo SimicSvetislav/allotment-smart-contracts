@@ -349,14 +349,14 @@
             </div>
             <div class="form-group col-md-3">
                 <label for="withPeriod">Withdrawal period</label>
-                <input required pattern="[1-9][0-9]*" #withPeriod="ngModel" multiple="1.0" step="1" min=1 [(ngModel)]='contract.periods[1]' type="number" class="form-control" name="withPeriod" id="withPeriod" placeholder="Enter number of days...">
+                <input required pattern="[0-9]+" #withPeriod="ngModel" multiple="1.0" step="1" min=0 [(ngModel)]='contract.periods[1]' type="number" class="form-control" name="withPeriod" id="withPeriod" placeholder="Enter number of days...">
                 <div *ngIf="f.submitted && withPeriod.invalid"
                     class="alert alert-danger">
                     <div *ngIf="withPeriod.errors.required">
                         Required
                     </div>
                     <div *ngIf="withPeriod.errors.pattern">
-                        Must be positive whole number
+                        Can't be negative value
                     </div>
                 </div>
             </div>

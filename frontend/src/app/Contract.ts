@@ -33,4 +33,6 @@ export class Contract {
 
     agreementDate: number;
     balance: number;
+    restricted: boolean;
+    availablebalance: number;
 }

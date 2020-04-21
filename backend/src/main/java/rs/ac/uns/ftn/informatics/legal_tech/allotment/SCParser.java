@@ -66,7 +66,7 @@ public class SCParser {
 	// Contract info
 	// *****************************
 	
-	private final static int CONTRACT_INFO_PARSE_STEP = 32 * 22;
+	private final static int CONTRACT_INFO_PARSE_STEP = 32 * 23;
 	
 	public static ContractDTO parseContractInfo(byte[] bytes) throws ParseException {
 		
@@ -106,11 +106,11 @@ public class SCParser {
 		bi = getNextRange(bytes, i++);
 		Long kidPrice = bi.longValue();
 		
-		// Get kid age limit
+		// Get SOMETHING
 		bi = getNextRange(bytes, i++);
-		// Short kidAgeLimit = bi.shortValue();
+		// Date agreementDate = new Date(bi.longValue()*1000);;
 		
-		// Get discount gor small kids
+		// Get SOMETHING
 		bi = getNextRange(bytes, i++);
 		// Short smallKidDiscount = bi.shortValue();
 
@@ -174,6 +174,8 @@ public class SCParser {
 		bi = getNextRange(bytes, i++);
 		Date mainSeasonEnd = new Date(bi.longValue()*1000);
 		
+		bi = getNextRange(bytes, i++);
+		Boolean restricted = bi.intValue() == 0 ? false : true;
 		
 		
 		cInfo.setStartDate(startDate);
@@ -183,7 +185,6 @@ public class SCParser {
 		
 		cInfo.setPriceOS(priceOS);
 		cInfo.setKidPrice(kidPrice);
-		// cInfo.setKidAgeLimit(kidAgeLimit);
 		// cInfo.setSmallKidDiscount(smallKidDiscount);
 		
 		cInfo.setOffSeasonMinimum(offSeasonMinimum);
@@ -203,6 +204,8 @@ public class SCParser {
 		
 		cInfo.setMainSeasonStart(mainSeasonStart);
 		cInfo.setMainSeasonEnd(mainSeasonEnd);
+		
+		cInfo.setRestricted(restricted);
 		
 		return cInfo;
 		
@@ -258,7 +261,7 @@ public class SCParser {
 	// Reservations
 	// *****************************
 
-	private final static int RESERVATION_PARSE_STEP = 32 * 10;
+	private final static int RESERVATION_PARSE_STEP = 32 * 11;
 	
 	public static List<ReservationDTO> parseReservations(byte[] bytes) {		
 		List<ReservationDTO> reservations = new ArrayList<ReservationDTO>();
@@ -316,6 +319,10 @@ public class SCParser {
 		bi = new BigInteger(Arrays.copyOfRange(bytes, 32*9, 32*10));
 		Integer kids = bi.intValue();
 		
+		// Get commision
+		bi = new BigInteger(Arrays.copyOfRange(bytes, 32*10, 32*11));
+		Long commision = bi.longValue();
+		
 		c.setId(id);
 		c.setFrom(fromDate);
 		c.setTo(toDate);
@@ -326,6 +333,7 @@ public class SCParser {
 		c.setBeds(beds);
 		c.setMainSeason(mainSeason);
 		c.setKids(kids);
+		c.setCommision(commision);
 		
 		return c;
 		
@@ -441,9 +449,10 @@ public class SCParser {
 		
 		cInfo.setPrices(prices);
 		
-		// Get kid age limit
+		// Get available balance
 		bi = getNextRange(bytes, i++);
-	
+		cInfo.setAvailablebalance(bi);
+		
 		// Get discount gor small kids
 		bi = getNextRange(bytes, i++);
 

@@ -14,13 +14,18 @@ INSERT INTO agency (id, address, city, country, name, account)
 VALUES (1, "Bulevar Oslobođenja 30", "Novi Sad", 
 		"Srbija", "Sabra", null);
 		
+		
 INSERT INTO accomodation (id, address, city, country, name, account)
-VALUES (2, "Fruskogorska", "Novi Sad", 
+VALUES (2, "Fruskogorska 30", "Novi Sad", 
 		"Srbija", "Lims", null);
 
 INSERT INTO accomodation (id, address, city, country, name, account)
-VALUES (3, "Fruskogorska", "Novi Sad", 
+VALUES (3, "Fruskogorska 20", "Novi Sad", 
 		"Srbija", "Park org", null);
+
+INSERT INTO agency (id, address, city, country, name, account)
+VALUES (4, "Grčkoškolska 10", "Novi Sad", 
+		"Srbija", "Kon Tiki Travel", null);
 		
 INSERT INTO representative (display_name, email, full_name, password, phone_number, representing_id)
 VALUES ("ppera", "pera@gmail.com", "Petar Petrovic", 
@@ -36,6 +41,16 @@ INSERT INTO representative (display_name, email, full_name, password, phone_numb
 VALUES ("jova", "jova@gmail.com", "Jovan Jovanovic", 
 		"$2a$10$TYEJ0OSTcthhSaYJccW2l.WvFEvtSehJ0njXf6OPXB7KW0pfh0/nW", 
 		"068/987-65-43", 3);
+		
+INSERT INTO representative (display_name, email, full_name, password, phone_number, representing_id)
+VALUES ("jovica", "jovica@gmail.com", "Jovica Jovic", 
+		"$2a$10$TYEJ0OSTcthhSaYJccW2l.WvFEvtSehJ0njXf6OPXB7KW0pfh0/nW", 
+		"064/412-353", 3);
+		
+INSERT INTO representative (display_name, email, full_name, password, phone_number, representing_id)
+VALUES ("kontiki", "kontiki@gmail.com", "Kristijan Trajkovic", 
+		"$2a$10$TYEJ0OSTcthhSaYJccW2l.WvFEvtSehJ0njXf6OPXB7KW0pfh0/nW", 
+		"064/412-353", 4);
 
 INSERT INTO hotel (address, city, country, name, org_id)
 VALUES ("Nikole Pašića 27", "Novi Sad", "Srbija", "Hotel Fontana", 2);
@@ -102,10 +117,10 @@ VALUE (4, 4, 5);
 -- INSERT INTO room (beds, hotel_id)
 -- VALUES (2, 1);
 
-INSERT INTO contract (address, end_date, start_date, status, accomodation_id, agency_id, ag_repr_id, acc_repr_id)
-VALUE ("0x6bf8da2da6b5eaf4289919cec358c2065d93f92f", 
-	   "2020-03-21", "2020-04-21", "NEG", 3, 1, 1, 0);
+-- INSERT INTO contract (address, end_date, start_date, status, accomodation_id, agency_id, ag_repr_id, acc_repr_id)
+-- VALUE ("0x4727170965d5a69b83551c01dce032209cb8c0f2", 
+--	   "2020-05-01", "2020-10-31", "NEG", 2, 1, 1, 0);
 	   
-INSERT INTO contract (address, end_date, start_date, status, accomodation_id, agency_id, ag_repr_id, acc_repr_id)
-VALUE ("0x60aac89c241da220b409f2b037bfded720412479", 
-	   "2020-03-21", "2020-04-21", "NEG", 2, 1, 0, 2);
+-- INSERT INTO contract (address, end_date, start_date, status, accomodation_id, agency_id, ag_repr_id, acc_repr_id)
+-- VALUE ("0x60aac89c241da220b409f2b037bfded720412479", 
+--	   "2020-03-21", "2020-04-21", "NEG", 2, 1, 0, 2);

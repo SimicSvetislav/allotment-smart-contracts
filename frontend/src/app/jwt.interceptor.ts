@@ -33,11 +33,19 @@ export class JwtInterceptor implements HttpInterceptor {
                     break;
                 }
                 default: {
+
                     if (err.error.message) {
                         this.toastr.error(err.error.message);
                     } else {
-                        this.toastr.error(err.error);
+                        const errorObj = JSON.parse(err.error)
+
+                        if (errorObj.message) {
+                            this.toastr.error(errorObj.message);
+                        } else {
+                            this.toastr.error(err.error);
+                        }
                     }
+
                     break;
                 }
             }
