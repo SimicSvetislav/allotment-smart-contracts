@@ -1,5 +1,5 @@
 # Pametni ugovori o alotmanu
-Projekat za predmet Pravna informatika na master akademskim studijama u okviru studijskog programa Primenjene računarske nauke i informatika, modul Inteligentni sistemi.
+Repozitorijum za projekte na predmetima Pravna informatika i Semantički veb na master akademskim studijama u okviru studijskog programa Primenjene računarske nauke i informatika, modul Inteligentni sistemi.
 
 ## Uputstvo za pokretanje
 
