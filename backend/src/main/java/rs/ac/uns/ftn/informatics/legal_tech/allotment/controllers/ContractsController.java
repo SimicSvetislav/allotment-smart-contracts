@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import rs.ac.uns.ftn.informatics.legal_tech.allotment.cto.ContractCTO;
@@ -59,6 +60,20 @@ public class ContractsController {
 	
 	@Autowired
 	private RepresentativeService reprService;
+	
+	@Autowired
+	private RestTemplate restClient;
+	
+	private static final String SW_SERVICE = "http://localhost:8081/api/sw/";
+	
+	@GetMapping(path="/trc")
+	public ResponseEntity<String> testRestClient() {
+	
+		ResponseEntity<String> response = restClient.getForEntity(SW_SERVICE + "trc", String.class);
+		
+		//return new ResponseEntity<String>("Test OK", HttpStatus.OK);
+		return response;
+	}
 	
 	@GetMapping(path="/deployA")
 	public ResponseEntity<String> deployA() {
@@ -260,7 +275,6 @@ public class ContractsController {
 		
 		
 		String retVal = service.transferOne(address);
-
 		
 		return new ResponseEntity<String>(retVal, HttpStatus.OK);
 		
@@ -397,7 +411,7 @@ public class ContractsController {
 			Hotel hotel = hotelService.findById(id.longValue());
 			Accomodation org = hotel.getOrg();
 			if (org.getId() != orgId) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Hotels do not belong to organization");
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Hotels do not belong to the same organization");
 				// return new ResponseEntity<String>("Hotels do not belong to organization", HttpStatus.BAD_REQUEST);
 			}
 			
@@ -609,9 +623,34 @@ public class ContractsController {
 			@PathVariable("repr") Long repr) {
 		
 		//Contract c = service.acceptProposal(contract, repr);
+		
+		// Odkomentarisati kada se ne radi testiranje
 		service.acceptProposal(contract, repr);
 		
+		Contract ctr = service.findById(contract);
+		
+		ContractCTO contractCTO = service.getContractInfo(ctr);
+		
+		restClient.postForEntity(SW_SERVICE + "add", contractCTO, String.class);
+		
 		return new ResponseEntity<String>("Contract successfully concluded", HttpStatus.OK);
+		
+	}
+	
+	@GetMapping(path="/mock/accept/{contract}/{repr}")
+	public ResponseEntity<String> acceptProposalMock(
+			@PathVariable("contract") Long contract,
+			@PathVariable("repr") Long repr) {
+		
+		Contract ctr = service.findById(contract);
+		
+		ContractCTO contractCTO = service.getContractInfo(ctr);
+		
+		ResponseEntity<String> responseSW = restClient.postForEntity(SW_SERVICE + "add/" + repr, contractCTO, String.class);
+		
+		return responseSW;
+		
+		// return new ResponseEntity<String>("Mock accept successful", HttpStatus.OK);
 		
 	}
 	

@@ -1,7 +1,6 @@
 package rs.ac.uns.ftn.informatics.legal_tech.allotment;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,8 +8,6 @@ import java.io.InputStreamReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.web3j.tx.gas.DefaultGasProvider;
 
@@ -28,7 +25,7 @@ public class InitializationBean {
   @Autowired
   private OrganizationService orgService;
 
-@EventListener
+  @EventListener
   public void onApplicationEvent(ContextRefreshedEvent event) {
       System.out.println("Initialization bean triggered");
 		BufferedReader reader = null;

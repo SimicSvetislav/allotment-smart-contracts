@@ -30,9 +30,14 @@
             <hr />
               {{c.startDate | date: 'dd. MMM yyyy.'}} - {{c.endDate | date: 'dd. MMM yyyy.'}}
             <hr /> 
-            <a role="button" data-toggle="collapse" href="#collapseExample{{c.id}}">Details...</a>
+            <!--<a role="button" data-toggle="collapse" href="#collapseExample{{c.id}}">Details...</a>-->
+            <p>
+              <button type="button" class="btn-details" (click)="isCollapsed[c.id] = !isCollapsed[c.id]">
+                Details...
+              </button>
+            </p>
           </div>
-          <div class="collapse" id="collapseExample{{c.id}}">
+          <div class="collapse" id="collapseExample{{c.id}}" [ngbCollapse]="!isCollapsed[c.id]">
             <div class="card">
               <div class="card-header">
                 
@@ -114,9 +119,14 @@
             <hr />
               {{c.startDate | date: 'dd. MMM yyyy.'}} - {{c.endDate | date: 'dd. MMM yyyy.'}}
             <hr />
-            <a role="button" data-toggle="collapse" href="#collapseCOW{{c.id}}">Details...</a>
+            <!--<a role="button" data-toggle="collapse" href="#collapseCOW{{c.id}}">Details...</a>-->
+            <p>
+              <button type="button" class="btn-details" (click)="isCollapsed[c.id] = !isCollapsed[c.id]">
+                Details...
+              </button>
+            </p>
           </div>
-          <div class="collapse" id="collapseCOW{{c.id}}">
+          <div class="collapse" id="collapseCOW{{c.id}}" [ngbCollapse]="!isCollapsed[c.id]">
             <div class="card">
               <div class="card-header">
                 
@@ -217,6 +227,7 @@
                     </div>
                   </div> 
                 </div>
+                <hr />
                 <div id="sendForm" class='container'>
                   <form name="sendFundsForm" (ngSubmit)="validateSendFunds(sfForm) && sendFundsMethod(c.id)" *ngIf="repr.id == c.agencyRepr" #sfForm="ngForm" novalidate>
                     <div class='form-row'>
@@ -243,9 +254,10 @@
                         <button name="bt3" type="submit" class="form-control btn btn-primary">Send</button>
                       </div>
                     </div>
+                    <br />
+                    <hr />
                   </form>
                 </div>
-                <br />
                 <div *ngIf="repr.id == c.agencyRepr" class="container">
                   <div class="row">
                     <div class="offset-md-10 col-md-2">

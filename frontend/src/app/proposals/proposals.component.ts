@@ -59,6 +59,8 @@ export class ProposalsComponent implements OnInit {
 
   fundsValue: number;
 
+  isCollapsed = new Map<number, boolean>();
+
   ngOnInit() {
 
     this.authService.checkLoggedIn();
@@ -69,7 +71,6 @@ export class ProposalsComponent implements OnInit {
     this.repr = this.authService.getUser();
 
     this.populate();
-
   }
 
   populate() {
@@ -99,6 +100,7 @@ export class ProposalsComponent implements OnInit {
             }
             cStr += ';  ';
           }
+          this.isCollapsed.set(c.id, false);
         }
         this.roomsInfoStrings.set(c.id, cStr);
       });
@@ -127,6 +129,7 @@ export class ProposalsComponent implements OnInit {
             }
             cStr += ';  ';
           }
+          this.isCollapsed.set(c.id, false);
         }
         this.roomsInfoStrings.set(c.id, cStr);
       });

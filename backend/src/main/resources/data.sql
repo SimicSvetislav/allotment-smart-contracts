@@ -67,7 +67,7 @@ INSERT INTO hotel (address, city, country, name, org_id)
 VALUES ("Primorska 50", "Novi Sad", "Srbija", "Hotel Garden", 2);
 
 INSERT INTO hotel (address, city, country, name, org_id)
-VALUES ("Nikole Tesle 1", "Novi Sad", "Srbija", "Vila Park", 3);
+VALUES ("Nikole Tesle 1", "Subotica", "Srbija", "Vila Park", 3);
 
 INSERT INTO hotel (address, city, country, name, org_id)
 VALUES ("Novosadskog sajma 35", "Novi Sad", "Srbija", "Hotel Park", 3);

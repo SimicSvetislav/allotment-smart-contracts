@@ -5,3 +5,4 @@ export const REPR_API = API + 'repr/';
 export const ORG_API = API + 'org/';
 export const HOTEL_API = API + 'hotel/';
 
+export const SW_API = 'http://localhost:8081/api/';

@@ -1,0 +1,48 @@
+<div class="form-page animate" *ngIf="view == 'form'">
+	<div class="row">
+		<div class="col-md-8 offset-md-2">
+        	<!--<img src="assets/smart-contract-512.png" class="user-avatar" /> -->
+			<h1>Allotment platform<br/><small>SPARQL query</small></h1>
+			<form role="form" (ngSubmit)="submitQuery()">
+				<div class="form-row">
+					<div class="form-group col-md-5">
+						<label for="dpsd">Start date</label>
+						<div class="input-group">
+                            <input class="form-control" placeholder="Choose start date..."
+								name="dpsd" id="dpsd" [(ngModel)]="query.startDate" 
+								ngbDatepicker #dpsd="ngbDatepicker" (ngModelChange)="changeStartDate()">
+							<div class="input-group-append">
+								<button class="btn btn-outline-secondary" (click)="dpStartToggle(dpsd)" type="button">
+									<i class="far fa-calendar-alt"></i>
+								</button>
+							</div> 
+						</div>
+					</div>
+					<div class="form-group col-md-5 offset-md-2">
+						<label for="dped">End date</label>
+            			<div class="input-group">
+                            <input class="form-control" placeholder="Choose end date..."
+								name="dped" id="dped" [(ngModel)]="query.endDate" 
+								ngbDatepicker #dped="ngbDatepicker" (ngModelChange)="changeEndDate()">
+							<div class="input-group-append">
+								<button class="btn btn-outline-secondary" (click)="dpEndToggle(dped)" type="button">
+									<i class="far fa-calendar-alt"></i>
+								</button>
+							</div> 
+						</div>
+					</div>
+				</div>
+                <div class="form-row">
+					<div class="form-group col">
+						<label for="location">Location</label>
+						<input type="text" id="location" required [(ngModel)]="query.location" name="location" class="form-control" placeholder="Location">
+					</div>
+				</div>
+				<button class="btn rounded-btn"> Submit </button>
+			</form><br>
+		</div>	
+	</div>
+</div>
+<div *ngIf="view == 'results'">
+
+</div>

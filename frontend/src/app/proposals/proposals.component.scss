@@ -90,3 +90,13 @@ hr {
 .rounded-remove-btn {
     background: rgb(189, 40, 40);
 }
+
+.btn-details {
+    outline: none;
+    border: none;
+    color: #227391;
+    background-color: white;
+    &:hover {
+        color: #31acd8;
+    }
+}

@@ -1,3 +1,4 @@
+import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 export class JwtResponse {
     accessToken: string;
     tokenType: string;
@@ -28,4 +29,16 @@ export class AuthLoginInfo {
         this.username = username;
         this.password = password;
     }
+}
+
+export class Query {
+    startDate: NgbDateStruct;
+    endDate: NgbDateStruct;
+    location: string;
+}
+
+export class QueryDTO {
+    startDate: number;
+    endDate: number;
+    location: string;
 }

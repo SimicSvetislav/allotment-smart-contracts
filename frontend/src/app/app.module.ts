@@ -24,6 +24,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { ContractsComponent } from './contracts/contracts.component';
 import { YesNoPipe } from './yes-no.pipe';
 import { RateFormatPipe } from './rate-format.pipe';
+import { SparqlQueryComponent } from './sparql-query/sparql-query.component';
 
 const appRoutes: Routes = [
   // { path: 'sc-form', component: ContractFormComponent },
@@ -34,6 +35,7 @@ const appRoutes: Routes = [
   { path: 'contracts', component: ContractsComponent },
   { path: 'propose', component: ProposeComponent },
   { path: 'propose/:id', component: ProposeComponent },
+  { path: 'sparql', component: SparqlQueryComponent},
   { path: '**', component: NotFoundComponent }
 ];
 
@@ -48,7 +50,8 @@ const appRoutes: Routes = [
     ContractsComponent,
     ProposeComponent,
     YesNoPipe,
-    RateFormatPipe
+    RateFormatPipe,
+    SparqlQueryComponent
   ],
   imports: [
     BrowserModule,
